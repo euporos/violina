@@ -149,6 +149,15 @@ pgloader pg_migration/violina_legacy.load
 #    (same gotcha as in scripts/pg_migrate.sh).
 psql -d "${PGDATABASE}" -v ON_ERROR_STOP=1 -c 'TRUNCATE directus_sessions;'
 
+# 6. Narrow user-facing numeric columns from bigint → integer. pgloader maps
+#    MySQL BIGINT to PG bigint, which the PG driver serializes as JSON
+#    strings. The admin UI then feeds those strings to vue-i18n's number
+#    formatter and the form crashes (INVALID_ARGUMENT, error code 17). See
+#    pg_migration/sanitize_legacy_metadata.sql for the full rationale.
+echo "--- Sanitizing legacy metadata (bigint → integer for UI numerics) ---"
+psql -d "${PGDATABASE}" -v ON_ERROR_STOP=1 \
+     -f pg_migration/sanitize_legacy_metadata.sql
+
 if pc_running; then
   process-compose process start directus >/dev/null 2>&1 || true
 fi
