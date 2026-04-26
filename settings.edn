@@ -6,7 +6,7 @@
  :print-sql false
  :host "0.0.0.0"
  :port 3000
- :locale-fallback [:de :en :uk] ; muss alle Sprachen enthalten
+ :locale-fallback [:de :en :uk :it] ; muss alle Sprachen enthalten
  :mode   :dev
  :share-with-frontend [:locale-fallback
                        :site-name

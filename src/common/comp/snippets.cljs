@@ -55,7 +55,8 @@
    [kontakt
     {:de "Kontakt"
      :en "Contact"
-     :uk "Контакти"}]
+     :uk "Контакт"
+     :it "Contatto"}]
    [youtube-consent-text
     {:de "Dieses Video wird von YouTube gehostet. Durch Klicken auf \"Video laden\" akzeptieren Sie die "
      :en "This video is hosted by YouTube. By clicking \"Load video\" you accept the "
@@ -79,34 +80,47 @@
    [termine
     {:en "Calendar"
      :de "Termine"
-     :uk "Календар"}]
+     :uk "Календар"
+     :it "Calendario"}]
 
    [konzertliste
     {:en "Concerts"
      :de "Konzertliste"
-     :uk "Список концертів"}]
+     :uk "Список концертів"
+     :it "Concerti"}]
 
    [kuenstler
-    {:en "Artists"
-     :de "Künstler"
-     :uk "Артисти"}]
+    {:en "Musicians"
+     :de "Musiker"
+     :uk "Музиканти"
+     :it "Musicisti"}]
 
    [programme
     {:en "Programs"
      :de "Programme"
-     :uk "Програми"}]
+     :uk "Програми"
+     :it "Programmi"}]
 
    [cds
-    {:en "Discs"
-     :de "Discs"
-     :uk "Диски"}]
+    {:en "CDs"
+     :de "CDs"
+     :uk "Диски"
+     :it "CD"}]
 
    [galerie
     {:en "Gallery"
      :de "Galerie"
-     :uk "Галерея"}]
+     :uk "Галерея"
+     :it "Galleria"}]
 
    [presse
     {:en "Press"
      :de "Presse"
-     :uk "Преса"}]])
+     :uk "Преса"
+     :it "Pressa"}]
+
+   [paedagogik
+    {:en "Teaching"
+     :de "Pädagogik"
+     :uk "Педагогіка"
+     :it "Insegnamento"}]])

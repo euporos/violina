@@ -145,14 +145,11 @@
   [:a.navbar-item {:href (rt/switch-locale-and-prepend-domain locale req)}
    string])
 
-(let [switchers [[:de (partial locale-switcher :de "Deutsch")]
-                 [:uk (partial locale-switcher :uk "Українска")]
-                 [:en (partial locale-switcher :en "English")]]]
-  (defn locale-switchers [req]
-    (keep
-     (fn [[locale func]]
-       (when-not (= locale (:locale req)) (func req)))
-     switchers)))
+(def locale-switcher-order [:de :en :uk :it])
+
+(defn locale-switchers [req]
+  (for [locale locale-switcher-order]
+    (locale-switcher locale (name locale) req)))
 
 (defn alternate-locales  [current-locale])
 
@@ -163,11 +160,14 @@
     [:ul.navigation
      (link :home        (snip/home locale))
      (link :termine     (snip/termine locale))
-     (link :programme   (snip/programme locale))
      (link :kuenstler   (snip/kuenstler locale))
+     (link :programme   (snip/programme locale))
      (link :cds         (snip/cds locale))
      (link :galerie     (snip/galerie locale))
      (link :presse      (snip/presse locale))
+     [:li.navigation__item
+      [:a {:href (str "/" (name locale) "/pg/1-paedagogik")}
+       (snip/paedagogik locale)]]
      [:li.navigation__item
       [:a {:href (str (routing/reverse-match req :home {}) "#contact")}
        (snip/kontakt locale)]]
