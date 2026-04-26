@@ -141,15 +141,16 @@
 ;; ###### Head & Footer ######
 ;; ###########################
 
-(defn locale-switcher [locale string req]
-  [:a.navbar-item {:href (rt/switch-locale-and-prepend-domain locale req)}
-   string])
+(defn locale-switcher [locale req]
+  [:span.navigation__locale
+   [:a {:href (rt/switch-locale-and-prepend-domain locale req)}
+    (name locale)]])
 
 (def locale-switcher-order [:de :en :uk :it])
 
 (defn locale-switchers [req]
   (for [locale locale-switcher-order]
-    (locale-switcher locale (name locale) req)))
+    (locale-switcher locale req)))
 
 (defn alternate-locales  [current-locale])
 
@@ -171,8 +172,8 @@
      [:li.navigation__item
       [:a {:href (str (routing/reverse-match req :home {}) "#contact")}
        (snip/kontakt locale)]]
-     (for [item (locale-switchers req)]
-       [:li.navigation__item.navigation__locale item])]))
+     [:li.navigation__item.navigation__item--locale
+      (locale-switchers req)]]))
 (defn footer [{:keys [locale] :as req}]
   [:div.footer
    [:div.footer__menue]
