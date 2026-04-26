@@ -60,31 +60,58 @@ GRANT ALL PRIVILEGES ON \`${SRC_DB}\`.* TO 'directus'@'localhost';
 FLUSH PRIVILEGES;
 SQL
 
-# 2. Stepwise Directus migrations: v9 → v10 → v11.
-#    Run each major's binary against the same DB so its built-in migrations
-#    upgrade the schema. Per-major node_modules are cached under ~/.cache.
+# 2. Stepwise Directus migrations: v9 → v10 → v11, all against MariaDB.
+#    Doing all three legs in MariaDB before pgloader runs keeps the
+#    schema self-consistent: MariaDB has no `uuid` type (uses char(36)
+#    everywhere), and pgloader transcribes that uniformly to PG
+#    `character`. If we instead ran the v11.17 leg against PG *after*
+#    pgloader, new FKs added by recent migrations (e.g. Add Deployment)
+#    would be declared `uuid` while existing pgloader-created columns
+#    are `character` — incompatible-type FK error.
 #
-#    Why a sub-nix-shell with Node 20 + Python 3.11: Directus 10/11 pull in
-#    `isolated-vm`, whose pinned C++ source doesn't compile against Node 22's
-#    V8 headers, and node-gyp needs Python's distutils (gone in 3.12+).
-#    Node 20 + Py 3.11 is the sweet spot. (v9 has no native deps; using the
-#    same shell for all three is just simpler than splitting.)
+#    Version pinning:
+#    - v9 / v10: cached scratch installs in ~/.cache (any patch level
+#      that resolves to the major is fine; nothing later in the pipeline
+#      depends on these specific versions).
+#    - v11: use the repo's own directus/ install — pinned via
+#      directus/package.json + lockfile to the version this project
+#      boots, so the post-pgloader Directus startup finds exactly the
+#      schema migrations it expects (incl. things like `searchable` on
+#      directus_fields, added in 11.4+).
+#
+#    Native build env:
+#    - v10's `isolated-vm` doesn't compile against Node 22's V8 headers
+#      and node-gyp needs Python's distutils (gone in 3.12+). The v9/v10
+#      installs run inside a Node 20 / Python 3.11 sub-shell.
+#    - v11 (repo install) was already built by `nix run .#setup` under
+#      Node 22 — its native bindings are ABI-bound to Node 22, so we
+#      invoke it from the outer dev shell, NOT inside the Node 20
+#      sub-shell.
 echo "--- Stepwise Directus migrations: v9 → v10 → v11 ---"
-export SRC_DB CACHE_ROOT
+# Build a throwaway env file with the MariaDB connection. Directus
+# (`@directus/env`) loads its config file LAST, so file values override
+# process.env — meaning the existing directus/.env (which points at PG)
+# would otherwise hijack these migrations. Point CONFIG_PATH at our
+# temp file to win.
+TMP_ENV="$(mktemp -t bootstrap-legacy-env.XXXXXX)"
+trap 'rm -f "$TMP_ENV"' EXIT
+cat >"$TMP_ENV" <<EOF
+DB_CLIENT=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=${SRC_DB}
+DB_USER=directus
+DB_PASSWORD=password
+KEY=$(uuidgen)
+SECRET=$(uuidgen)
+EOF
+export CONFIG_PATH="$TMP_ENV"
+
+# v9 + v10 in a Node 20 / Python 3.11 sub-shell.
+export SRC_DB CACHE_ROOT CONFIG_PATH
 nix-shell -p nodejs_20 python311 --run '
   set -euo pipefail
-  export DB_CLIENT=mysql
-  export DB_HOST=127.0.0.1
-  export DB_PORT=3306
-  export DB_DATABASE="$SRC_DB"
-  export DB_USER=directus
-  export DB_PASSWORD=password
-  # KEY/SECRET are required to load Directus but throwaway for migrate
-  # (they only sign tokens, not data).
-  export KEY="$(uuidgen)"
-  export SECRET="$(uuidgen)"
-
-  for V in 9 10 11; do
+  for V in 9 10; do
     dir="$CACHE_ROOT/dx-v$V"
     if [[ ! -d "$dir/node_modules" ]]; then
       echo "  installing directus@^$V into $dir"
@@ -98,6 +125,12 @@ nix-shell -p nodejs_20 python311 --run '
     (cd "$dir" && npx --no-install directus database migrate:latest)
   done
 '
+
+# v11 — repo's own directus/ install, still pointed at MariaDB
+# via CONFIG_PATH (which @directus/env loads in preference to
+# directus/.env).
+echo "  migrating via repo's own directus/ (v11)"
+(cd directus && npx --no-install directus database migrate:latest)
 
 # 3. Reset the PG target (drop/recreate role + DB).
 echo "--- Resetting PG ${PGDATABASE} ---"
