@@ -1,0 +1,13 @@
+LOAD DATABASE
+     FROM      mysql://directus:password@127.0.0.1:3306/violina_legacy
+     INTO postgresql://directus:password@127.0.0.1:5435/directus
+
+WITH include drop, create tables, create indexes, reset sequences,
+     foreign keys, quote identifiers
+
+SET PostgreSQL PARAMETERS
+     maintenance_work_mem to '128MB',
+     work_mem to '12MB'
+
+ALTER SCHEMA 'violina_legacy' RENAME TO 'public'
+;

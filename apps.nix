@@ -136,6 +136,14 @@ in
     '';
   };
 
+  # One-time: walk the legacy v9 MariaDB dump (violina-petrychenko.de) through
+  # Directus v9 → v10 → v11 schema migrations, then pgloader-pump into local PG.
+  bootstrap-legacy = flake-utils.lib.mkApp {
+    drv = pkgs.writeShellScriptBin "festival-bootstrap-legacy" ''
+      exec nix develop .#default --command bash scripts/bootstrap_legacy_db.sh "$@"
+    '';
+  };
+
   # Clone production database to local dev
   clone-prod-db = mkApp "festival-clone-prod-db" ''
     export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
