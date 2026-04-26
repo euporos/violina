@@ -16,7 +16,7 @@
                     :asset-path "/compiled/js" ; entscheidend für location der Source Maps
                     :modules    {:app {:init-fn app.core/main
                                        :preloads [devtools.preload
-                                                  day8.re-frame-10x.preload]
+                                                  #_day8.re-frame-10x.preload]
                                        :entries [app.router
                                                  app.admin
                                                  app.modal
