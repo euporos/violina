@@ -7,7 +7,6 @@
              [seiten.home :as home]
              [seiten.konzertliste :as konzertliste]
              [seiten.kuenstler :as kuenstler]
-             [seiten.medien :as medien]
              [seiten.page :as page]
              [seiten.presse :as presse]
              [seiten.programme :as programme]
@@ -55,9 +54,6 @@
                   :directus   {:collection "cds"
                                :params     {:cd-id "id"}}
                   :parameters {:path [[:cd-id :int]]}}]]
-
-    ["/medien" {:name    :medien
-                :handler medien/handler}]
 
     ["/galerie" {:name    :galerie
                  :handler galerie/handler}]

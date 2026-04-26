@@ -101,11 +101,6 @@
      :de "Discs"
      :uk "Диски"}]
 
-   [medien
-    {:en "Media"
-     :de "Medien"
-     :uk "Медіа"}]
-
    [galerie
     {:en "Gallery"
      :de "Galerie"

@@ -166,7 +166,6 @@
      (link :programme   (snip/programme locale))
      (link :kuenstler   (snip/kuenstler locale))
      (link :cds         (snip/cds locale))
-     (link :medien      (snip/medien locale))
      (link :galerie     (snip/galerie locale))
      (link :presse      (snip/presse locale))
      [:li.navigation__item
