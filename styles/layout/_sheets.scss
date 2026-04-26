@@ -1,0 +1,276 @@
+// //  #############
+// //  ### Sheet ###
+// //  #############
+
+.sheet {
+    padding: calc(#{$ppadding} * 3);
+    background: $base-transparent-lighter;
+    max-width: 70rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.5%;
+
+        @include respond(tab-port) {
+            padding-left: $ppadding;
+        }
+
+
+        @include respond(phone) {
+            padding: calc(#{$ppadding} / 2);
+        }
+
+    h1, h2, h3 {
+        color: $basecolor;
+        margin-top: calc(#{$ppadding} * 1.8);
+    }
+
+
+    &__header {
+        font-variant: small-caps;
+        font-size: 2rem;
+        // box-sizing: content-box;
+        text-align: center;
+        padding-bottom: $ppadding;
+        border-bottom: 3px solid $basecolor;
+        margin-bottom: 1.3rem;
+
+
+        &--cd {
+            text-align: left;
+
+
+            @include respond(phone) {
+                text-align: center;
+            }
+        }
+    }
+
+    &__body {
+        @include clearfix;
+
+
+    }
+
+    &__fliesstext {
+        display: relative;
+        text-align:justify;
+
+        hyphens: auto;
+        -ms-hyphens: auto;
+        -moz-hyphens: auto;
+        -webkit-hyphens: auto;
+
+        @include clearfix; // damit die Setlist nicht übersteht
+
+
+        // &--cd {
+        //     text-align: center
+        // }
+
+        p {
+            margin-top: $ppadding;
+        }
+    }
+
+    &__bild {
+
+        // width: 100%;
+        &--h {
+            width: 100%;
+            text-align: center;
+            margin-bottom: $ppadding;
+        }
+
+        &--v {
+            width: calc(50% - (#{$ppadding} / 2));
+            float: right;
+            padding-left: $ppadding;
+            padding-bottom: $ppadding;
+        }
+
+        &--cd {
+            width: calc(33% - (#{$ppadding} / 2));
+            float: left;
+            padding-right: $ppadding;
+            padding-bottom: $ppadding;
+
+            @include respond(phone) {
+                float: none;
+                width: 75%;
+                padding: 0;
+            }
+
+        }
+
+        &--vl {
+            width: calc(50% - (#{$ppadding} / 2));
+            float: left;
+            padding-right: $ppadding;
+            padding-bottom: $ppadding;
+        }
+
+    }
+}
+
+
+.galerie {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+
+
+
+    @include respond(phone) {
+        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));;
+    }
+
+    @include respond(big-desk) {
+        grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));;
+    }
+
+    grid-gap: 1rem;;
+
+
+    &__vorschaubild {
+        transition: all .5s;
+        @include hebeeffekt;
+
+    }
+}
+
+
+// //  ######################
+// //  ##### Smallsheet #####
+// //  ######################
+
+
+.smallsheet {
+
+    background: $base-transparent;
+    text-align: center;
+    //padding: $ppadding;
+    display: inline-block;
+    overflow: hidden;
+    padding: $ppadding;
+    margin-left: $ppadding;
+    margin-right: $ppadding;
+    max-width: 100%;
+
+    @include respond(tab-port) {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+
+
+
+    // max-width: calc(100% - (2 * #{$ppadding}));
+
+
+    transition: transform 0.5s, box-shadow 0.5s;
+
+    @include hebeeffekt;
+
+    &__bild {
+        width: 100%;
+        margin-bottom: $ppadding;
+    }
+
+    &__name {
+
+        text-align: center;
+
+        font-variant: small-caps;
+
+        &:before {
+            content: "— ";
+        }
+
+        &:after {
+            content: " —";
+        }
+
+    }
+
+    &__header {
+        font-variant: small-caps;
+        font-size: 1.5rem;
+        // box-sizing: content-box;
+        text-align: center;
+        padding-bottom: $ppadding;
+        border-bottom: 3px solid $basecolor;
+        margin-bottom: 1.3rem
+
+    }
+
+
+    &__body {
+        font-variant: normal;
+        text-align: justify;
+        padding-bottom: $ppadding;
+        border-bottom: 3px solid $basecolor;
+
+    }
+
+}
+
+
+// //  ##################
+// //  #### Specials ####
+// //  ##################
+
+
+// kuenstler
+
+
+.smallsheet--kprev {
+    margin-top: 2rem;
+    max-height: 90%;
+    width: 25rem;
+    height: 30rem;
+}
+
+.smallsheet--cdprev {
+    margin-top: 2rem;
+    // max-height: 90%;
+    width: 25rem;
+    // height: 30rem;
+}
+
+
+//progprev
+
+.smallsheet--progprev {
+    // margin-top: $ppadding;
+    // margin: $ppadding;
+    // max-width: 30rem;
+    background: $base-transparent;
+    text-align: center;
+    //padding: $ppadding;
+    display: block;
+    overflow: hidden;
+    padding: $ppadding;
+    // margin: $ppadding;
+    margin: 0;
+    position: relative;
+
+
+
+    transition: transform 0.5s, box-shadow 0.5s;
+
+    &__kuenstlername {
+        font-size: 1rem;
+    }
+}
+
+.progprev__body {
+    @include hyphenate;
+}
+
+.smallsheet__header--progprev {
+    font-size: 1.5rem;
+}
+
+
+
+
+// CDs

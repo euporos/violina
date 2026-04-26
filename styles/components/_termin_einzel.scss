@@ -1,0 +1,218 @@
+.termin-ez {
+
+    max-width: 50rem;
+    padding: calc(#{$ppadding} * 3);
+    background: $base-transparent-lighter;
+    width: 90%;
+ //   display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+
+    // &:not(:first-child) {
+    //  margin-top: 2rem;
+    // }
+
+    margin-bottom: 2rem;
+
+    font-size: 1.5rem;
+
+    &__columns {
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        @include respond(phone) {
+            flex-direction: column;
+        }
+
+        &__left {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            width: 50%;
+            @include respond(phone) {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+        }
+
+        &__right {
+            flex-shrink: 3;
+            width: 50%;
+            @include respond(phone) {
+                width: 100%;
+            }
+        }
+    }
+
+    &__kuenstler {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    &__datum {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+
+    }
+
+
+    &__mehr-info {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    &__stuecke {
+        text-align: center;
+        float: right;
+        width: 50%;
+        border: solid $basecolor;
+        margin-left : 1rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+
+    }
+
+    &__performer {
+
+        text-align: center;
+
+
+        font-variant: small-caps;
+
+        &:before {
+            content: "— ";
+        }
+
+        &:after {
+            content: " —";
+        }
+
+    }
+
+    &__titel {
+        font-variant: small-caps;
+        font-size: 2rem;
+        // box-sizing: content-box;
+        text-align: center;
+        padding-bottom: $ppadding;
+        border-bottom: 3px solid $basecolor;
+        margin-bottom: 1.3rem
+
+    }
+
+    &__bild {
+
+
+        &--h {
+            width: 100%;
+            text-align: center;
+            margin-bottom: $ppadding;
+        }
+
+        &--v {
+            width: calc(50% - (#{$ppadding} / 2));
+            float: right;
+            padding-left: $ppadding;
+            padding-bottom: $ppadding;
+        }
+
+    }
+
+    &__setlist {
+
+        // display: absolute;
+        list-style-type:none;
+        margin-bottom: $ppadding;
+        // margin-top: $ppadding;
+        text-align: center;
+        width: calc(50% - (3 * #{$ppadding}));
+        border: 3px solid $basecolor;
+        padding: $ppadding;
+
+        &--h {
+            margin-left: $ppadding;
+            float: right;
+
+        }
+
+        &--v {
+            width: calc(50% + (#{$ppadding} / 2));
+            float: left;
+            margin-right: $ppadding;
+
+        }
+
+        // p {
+        //     b {
+        //      color: $basecolor;
+        //     }
+        // }
+
+        p:first-child {
+            margin-top:  calc(#{$ppadding} / 2);
+        }
+
+        p:not(:first-child) {
+            // margin-top: calc(#{$ppadding} / 2);
+            margin-top: 2rem;
+
+        }
+
+
+
+        @include respond(phone) {
+            float: none;
+            width: auto;
+            display: block;
+            margin: 0;
+        }
+    }
+
+    &__haupttext {
+        display: relative;
+        text-align:justify;
+
+
+        @include clearfix; // damit die Setlist nicht übersteht
+
+        p {
+            margin-top: $ppadding;
+        }
+    }
+
+
+    &__termine {
+        // color:tomato;
+        border-top: 3px solid $basecolor;
+        border-bottom: 3px solid $basecolor;
+        margin-top: $ppadding;
+        padding-top: $ppadding;
+        padding-bottom: $ppadding;
+        text-align: center;
+    }
+
+    &__terminankuendigung {
+        display: block;
+        color: $basecolor;
+        font-weight: bold;
+        margin-bottom: $ppadding;
+    }
+
+    &__termin {
+        width: 33%;
+        min-width: 20rem;
+        display: inline-block;
+        text-align: center;
+        margin-bottom: $ppadding;
+
+    }
+
+    &__terminstadt {
+        display: inline-block;
+    }
+
+    &__terminortname {
+        display: inline-block;
+    }
+
+}

@@ -1,0 +1,65 @@
+.instrument {
+    margin-left: .3rem;
+    margin-right: .3rem;
+    // transform: rotate(-15deg);
+    height: 3.5rem;
+
+    &--termine {
+        height: 2rem;
+            margin-left: .2rem;
+            margin-right: .2rem;
+    }
+}
+
+.mapicon {
+    height: 2rem;
+}
+
+
+
+.calendaricon {
+    margin-bottom: 1.3rem;
+    height: 2rem;
+    @include basefilter;
+}
+
+
+// //  ###################################################
+// //  ########### Loader from loading.io/css/ ###########
+// //  ###################################################
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  position: relative;
+  // background-color: $base-lighter;
+
+  &__msg {
+      color: tomato;
+      @include absCenter;
+  }
+
+
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 128px;
+  height: 128px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid $basecolor;
+  border-color: $basecolor transparent $basecolor transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// <div class="lds-dual-ring"></div>

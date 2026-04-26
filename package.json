@@ -9,7 +9,6 @@
     "atob": "^2.1.2",
     "bcrypt": "^6.0.0",
     "btoa": "^1.2.1",
-    "bulma": "^0.9.4",
     "concat-stream": "1.6.2",
     "content-type": "1.0.4",
     "cookies": "0.7.1",

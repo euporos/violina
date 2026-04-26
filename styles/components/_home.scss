@@ -1,0 +1,327 @@
+.dummyrow {
+    display: table-row;
+}
+
+.dummytable {
+    display: table;
+    width: 100%;
+}
+
+.dummycell {
+    display: table-cell;
+}
+
+
+$home-schriftfarbe: lighten($base-lighter, 10%);
+
+
+// //  #######################
+// //  ##### Homesection #####
+// //  #######################
+
+.homesection {
+    text-align: center;
+
+    // &:not(:first-child) {
+    //  margin-top: 5%;
+    // }
+
+    padding-top: 5%;
+    padding-bottom: 5%;
+
+    &:nth-of-type(odd) {
+        background: rgba($base-lighter, 1);
+    }
+
+    &:nth-of-type(even) {
+        background: rgba(lighten($base-lighter, 10%), 1);
+    }
+
+    &__ueberschrift {
+        font-size: 2rem;
+        font-variant: small-caps;
+    }
+
+    &--begruessungstext {
+        @include hyphenate;
+        text-align: justify;
+        padding: 3rem;
+        font-size: 1.25rem;
+        h2  {
+            // color: $basecolor;
+            margin-bottom: 1rem;
+
+        }
+    }
+
+    &__link-to-bio {
+        text-align: right;
+        margin-top: $ppadding;
+        color: $basecolor;
+        // float: right;
+    }
+
+        &:last-child {
+        margin-bottom: 5rem;
+    }
+
+}
+
+#homesection--begruessung {
+        text-align: right;
+        // background-image: url(../imgs/violina_schnee1.jpg);
+        background-image: url(/compiled/from_reservoir/ATT18701-1920.JPG);
+        // background-image: url(../imgs/kirschen4.jpg);
+
+        background-size: cover;
+        max-height: 80vw;
+        min-height: 45vw; // why wasn't this necessary before?
+    }
+
+
+.homeelem {
+    margin-top: 5%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    width: 20%;
+    min-width: 14rem;
+    background: $base-lighter;
+    text-align: center;
+    //padding: $ppadding;
+    font-variant: small-caps;
+    font-size: 1.5rem;
+    height: 21rem;
+    display: inline-block;
+    z-index: 1;
+    transition: transform .5s, box-shadow .5s;
+
+    // &:not(:first-child) {
+    //  margin-left: 5%;
+    // }
+
+
+
+
+    margin: 2.5%;
+
+    &--hebeeffekt {
+        &:hover {
+        // filter: none;
+        @include hebeeffekt;
+    }
+    }
+}
+
+
+.hmleiste {
+    text-align: center;
+    width: 100%;
+}
+
+
+// //  #############
+// //  ### Video ###
+// //  #############
+
+.video-container {
+position: relative;
+padding-bottom: 56.25%;
+padding-top: 30px; height: 0; overflow: hidden;
+}
+
+.video-container iframe,
+.video-container object,
+.video-container embed {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+
+
+// //  ###################
+// //  #### Begrüßung ####
+// //  ###################
+
+.begruessung {
+    text-align: right;
+    display: inline-block;
+    width: 70%;
+    height: 50%;
+    position: relative;
+    margin-right: 5%;
+
+    &__violina {
+        color: $home-schriftfarbe;
+        // color: $base-lighter;
+        text-shadow: 2px 2px .9rem black, -2px -2px .9rem black;;
+        display: inline-block;
+        font-weight: bold;
+        text-align: right;
+        position: absolute;
+        right: 0rem;
+
+    }
+
+    &__name {
+        font-variant: small-caps;
+        font-size: 5rem;
+
+
+
+
+        @include respond(tab-land) {
+            font-size: 7vw;
+        }
+
+
+        @include respond(tab-port) {
+            font-size: 8vw;
+        }
+
+
+        @include respond(phone) {
+            font-size: 9vw;
+        }
+
+    }
+
+
+    &__untertitel {
+        font-size: 2rem;
+        font-size: 3vw;
+        width: 100%;
+
+    }
+}
+
+// //  ##############
+// //  ### Presse ###
+// //  ##############
+
+.hmartikel {
+    background-image: url(/imgs/paper_texture.jpg);
+    // padding: $ppadding;
+    // display: table;
+
+    &__medium {
+        height: 6rem;
+        display: table-cell;
+        vertical-align: middle;
+        padding: $ppadding;
+
+        border-bottom: solid $basecolor 3px;
+        padding-bottom: calc($ppadding / 2);
+    }
+
+    &__ueberschrift {
+        height: 15rem;
+        display: table-cell;
+        padding: $ppadding;
+        vertical-align: middle;
+        font-size: 1.2rem;
+        margin-top: $ppadding;
+        margin-bottom: auto;
+        font-variant: normal;
+    }
+}
+
+
+
+// //  #################
+// //  #### termine ####
+// //  #################
+
+
+
+
+.terminvor {
+    // border-radius: 1rem;
+    background-size: cover;
+    opacity: 100%;
+    // filter: brightness(0%);
+    background-color: rgba($basecolor, 0.95);
+    // background-color: $basecolor;
+
+    // background-blend-mode: multiply;
+
+    &__text {
+        // filter: none !important;
+        color: white;
+        color: $home-schriftfarbe;
+        font-weight: bold;
+        text-shadow: 1px 1px .2rem black, -1px -1px .2rem black;
+        // text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
+        z-index: 3;
+        opacity: 100%;
+        display: table-cell;
+        height: 7rem;
+
+
+
+        &--zeit {
+            vertical-align: middle;
+        }
+
+        &--ort {
+            vertical-align: top;
+        }
+
+        &--kuenstler {
+        font-size: 2rem;
+        vertical-align: top;
+        }
+
+    }
+
+
+    &__bild {
+        z-index: -1;
+        width:100%;
+        height: 100%;
+        opacity: 100%;
+        @include absCenter;
+        // filter: blur(20px);
+        mix-blend-mode: multiply;
+        //filter: grayscale(100);
+        transition: all .5s;
+
+        &--unblurred {
+            filter: blur(0);
+        }
+
+        &:hover {
+            filter: blur(0);
+        }
+
+
+    }
+
+}
+
+
+
+
+
+.socialmedia {
+
+    &__item {
+        margin: 1rem;
+        width: 2rem;
+        height: 2rem;
+        // background-color: $base-lighter;
+        background-blend-mode: lighten;
+    }
+
+
+    &__icon {
+        height: 2rem;
+        // background-color: $base-lighter;
+        //
+        filter: brightness(0.7) sepia(1) hue-rotate(-10deg) saturate(0.5);
+    }
+
+
+}

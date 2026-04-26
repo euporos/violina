@@ -1,0 +1,60 @@
+
+
+@mixin basefilter {
+    filter: invert(10%) sepia(35%) saturate(6779%) hue-rotate(331deg) brightness(91%) contrast(94%);
+}
+
+@mixin menuhover {
+    	    font-weight: bold;
+	    color: black;
+	    text-shadow: 0 0 .5rem $textcolor;
+	    text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em white;
+}
+
+
+
+
+@mixin clearfix {
+    &::after {
+	content: "";
+	display: table;
+	clear: both;
+    }
+}
+
+@mixin  center-float-vertically {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+
+
+@mixin absCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+
+@mixin hyphenate {
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+}
+
+
+@mixin hebeeffekt {
+
+    &:hover {
+   	transform: scale(1.05);
+   	box-shadow: .2rem .5rem 1rem rgba(black,.7);
+    }
+
+}

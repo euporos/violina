@@ -1,0 +1,237 @@
+$tpadding: 1rem;
+
+.terminliste {
+
+    margin-top: 6rem;
+    margin-bottom: 8rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    max-width: 60rem;
+    width: 90%;
+
+
+
+    @include respond(tab-port) {
+        width: 100%;
+    }
+
+
+
+
+
+    // &__jahreszeile {
+    //  // width: 100%;
+    //  display: table-row;
+
+
+    // }
+
+    // &__jahreszelle {
+    //  display:table-cell;
+    //  font-size: 2rem;
+    //  padding: 1rem;
+    //  text-shadow: 0 0  .3rem white;
+    //  background-color: orange;
+    //  column-span: all;
+    // }
+
+    &__terminabschnitt {
+        width: 100%;
+    }
+}
+
+.termin {
+
+
+
+        &:nth-of-type(odd) {
+        background: rgba($base-lighter, .8);
+    }
+
+    &:nth-of-type(even) {
+        background: rgba(lighten($base-lighter, 10%), .8);
+    }
+
+    &--vergangen {
+        filter: grayscale(1);
+    }
+
+    // &:hover {
+    //  -moz-box-shadow:    inset 0px 0px 1rem $basecolor;
+    //  -webkit-box-shadow: inset 0px 0px 1rem $basecolor;
+    //  box-shadow:         inset 0px 0px 1rem rgba($basecolor, .7);
+    // }
+
+
+    &__hauptzeile {
+        display: flex;
+        align-items: center;
+        // justify-content: center;
+    }
+
+    &__detailzeile {
+        z-index: 5;
+        display: flex;
+        max-height: 0;
+        overflow: hidden;
+        // -webkit-transition: all 1s;
+        // -moz-transition: all 1s;
+        transition-delay: 0s;
+        transition: max-height .5s;
+
+
+        // .termin:hover
+
+        &--revealed {
+            transition-delay: 0s;
+            max-height: 50rem;
+            // -webkit-transition: all 1s;
+            // -moz-transition: all 1s;
+            // transition: all .5s;
+        }
+
+    }
+
+}
+
+
+.hauptzelle {
+
+       cursor: pointer;
+
+    padding: $tpadding;
+
+    &--pfeil {
+        font-weigth: bold;
+        font-size: 1.5rem;
+    }
+
+
+    &--links {
+
+        width: 23%;
+        // background: blue;
+        text-align: center;
+
+        @include respond(tab-port) {
+          width: 29%;
+        }
+
+    }
+
+    &--mitte {
+        text-align: left;
+        width: 50%;
+        // background: red;
+        @include respond(tab-port) {
+            width: 44%;
+        }
+
+    }
+
+
+    &--rechts{
+
+        width: 27%;
+        text-align: right;
+        // background-color: green;
+
+    }
+
+
+
+}
+
+.detailzelle {
+
+    padding: 0 $tpadding $tpadding $tpadding;
+    // background-color: green;
+
+
+    &--links {
+
+        width: 29%;
+        // background: blue;
+        text-align: center
+
+    }
+
+    &--mitte {
+        text-align: left;
+        width: 44%;
+        // background: red;
+
+
+    }
+
+
+    &--rechts{
+        // padding-right: $tpadding;
+        width: 27%;
+        text-align: right;
+        // background-color: green;
+
+    }
+
+    &__adresse {
+        margin-bottom: 1rem;
+    }
+
+    &__adressfeld {
+        display: inline-block;
+        margin-right: 1rem;
+
+    }
+
+    &__mapslink {
+
+
+        display: inline-block;
+
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+
+
+}
+
+
+    .jahreszeile {
+        // width: 100%;
+        // display: table-row;
+        font-size: 2rem;
+        padding: 1rem;
+        text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em white;
+        // background-color: orange;
+        column-span: all;
+
+
+
+    }
+
+    .jahreszelle {
+        display:table-cell;
+        font-size: 2rem;
+        padding: 1rem;
+        // text-shadow: 0 0  .3rem white;
+        background-color: orange;
+        column-span: all;
+    }
+
+    .abonnement {
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+        background-color: rgba($base-lighter, .8);
+        height: 4rem;
+
+        &__text {
+            padding-right: 1rem;
+        }
+
+        &__icon {
+        }
+    }

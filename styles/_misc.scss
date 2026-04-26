@@ -1,0 +1,24 @@
+
+
+
+.ausfallhinweis {
+      line-height: 1.8;
+    white-space: nowrap;
+    color: $basecolor;
+    border-radius: .25rem;
+    border: 2px solid $basecolor;
+    padding: .1rem;
+    margin-left: 1rem;
+    margin-top: .9rem;
+    margin-bottom: .2rem;
+    font-weight: bold;
+    text-align: right;
+}
+
+
+.ausfallhinweis--home {
+    color: white;
+    border: 2px solid white;
+}
+
+ 

@@ -1,0 +1,471 @@
+
+
+//  ########################
+//  ##### Desktop-Menu #####
+//  ########################
+
+
+
+.navigation {
+    background: $basecolor;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: $base-lighter;
+    // overflow: auto; // breaks it on Safari
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+
+    &__background {
+	// height: 0;
+	display: none;
+    }
+
+    &__checkbox {
+	display: none;
+    }	    // text-shadow: 1px 1px 2px $base-lighter, 0 0 1em $base-lighter, 0 0 0.2em $base-lighter;
+
+
+    &__item {
+	display: inline-block;
+	padding-top: .5rem;
+	padding-bottom: .5rem;
+	margin-left: auto;
+	margin-right: auto;
+
+	 &:not(&--locale), .navigation__locale {
+	    &:hover {
+		@include menuhover;
+	    }
+	    
+	}
+	
+	&:not(:last-child) {
+	    margin-right: 2rem;
+	    // background-color: green;
+	    
+	}
+    }
+
+    &__locale {
+ 
+    	&:not(:last-child) {
+    	    &:after {
+    		content: " | ";
+
+    	    }
+	    &:hover {
+		
+	    }
+    	}	
+    }
+}
+
+
+// Böser Hack, um das after-Element vom Hover-Effekt auszuschließen TODO
+.navigation__locale:hover:after {
+    text-shadow: none;
+    color: $base-lighter;
+    font-weight: normal;
+    
+} 
+
+
+
+
+//  #######################
+//  ##### Phone-Menu ######
+//  #######################
+
+
+// @include respond(tab-port) {
+//     ;
+
+// .navigation {
+    
+//     &__checkbox {
+// 	display: none; // hacking checkbox verbergen
+	
+//     }
+
+//     &__button {
+// 	height: 6rem;
+// 	width: 6rem;
+// 	position: fixed;
+// 	top: 2rem;
+// 	right: 2rem;
+// 	border-radius: 50%;
+// 	z-index: 2000;
+// 	text-align: center;
+	
+//     }
+
+//     &__background {
+// 	display: inline;
+// 	height: 5rem;
+// 	width: 5rem;
+// 	border-radius: 50%;
+// 	position: fixed;
+// 	top: 2.5rem;
+// 	right: 2.5rem;
+// 	background-color: $basecolor;
+// 	z-index: 1000;
+// 	transition: all .5s;
+	
+//     }
+
+//     &__nav {
+// 	height: 100vh;
+// 	width: 0;
+// 	position: fixed;
+// 	top: 0;
+// 	right: 0;
+// 	z-index: 1500;
+
+// 	// unsichtbar im Normalzustand
+// 	overflow: hidden;
+// 	opacity: 0;
+// 	transition: all .5s;
+//     }
+
+//     &__list {
+
+// 	@include absCenter;
+// 	top: 0; // 50% um nur von rechts einzufahren
+// 	list-style: none;
+// 	text-align: center;
+// 	transition: top .5s;
+//     }
+
+//     &__item {
+// 	display: block;
+// 	padding-top: .5rem;
+// 	padding-bottom: .5rem;
+// 	margin-left: auto;
+// 	margin-right: auto;
+
+// 	&:not(:last-child) { // den Spezialfall oben rückgängig machen
+// 	    margin-right: 0;
+//     }
+
+
+	
+//     }    
+
+
+//     // FUNCTIONALITY
+
+//     &__checkbox:checked ~ &__background {
+//     	transform: scale(75);
+//     }
+
+//     &__checkbox:checked ~ &__nav {
+// 	width: 100%;
+// 	opacity: 100%;
+//     }
+
+    
+//     &__checkbox:checked ~ &__nav &__list {
+// 	top: 50%;
+//     }
+
+//     &__hamburger {
+
+// 	position: relative;
+// 	margin-top: 3rem;
+// 	background-color: orangered;
+
+// 	&, &::before, &::after {
+// 	    width: 3rem;
+// 	    height: 3px;
+// 	    background-color: $base-lighter;
+// 	    display: inline-block;
+// 	    border-radius: 25%;;
+
+// 	}
+
+// 	&::before, &::after {
+// 	    position: absolute;
+// 	    content: "";
+// 	    left: 0;
+// 	    transition: all .4s;
+	    
+// 	}
+
+// 	&::before {
+// 	    top: -.8rem;
+// 	}
+
+// 	&::after{
+// 	    top: .8rem;
+// 	}
+	
+//     }
+
+//     &__button:hover &__hamburger::before {
+// 	top: -.95rem;
+//     }
+
+//     &__button:hover &__hamburger::after {
+// 	top: .95rem;
+//     }
+
+//    &__checkbox:checked + &__button &__hamburger {
+//        background-color: transparent;
+//    }
+
+//    &__checkbox:checked + &__button &__hamburger::before {
+//        transform: rotate(135deg);
+//        top: 0;
+//    }
+
+//    &__checkbox:checked + &__button &__hamburger::after {
+//        transform: rotate(-135deg);
+//        top: 0;
+//    }    
+// }
+
+// }
+
+
+
+ 
+
+// .footer {
+//     padding: $ppadding;
+//     width: vw;
+//     background-color: $basecolor;
+//     color: $base-lighter;
+    
+//     position: absolute;
+//     right: 0;
+//     bottom: 0;
+//     left: 0;
+
+
+//     &__menue {
+// 	width: 100%;
+// 	display: flex;
+// 	justify-content: space-around;
+//     }
+
+//     &__menueitem {
+	
+//     }
+
+//     &__copyright {
+// 	text-align: center;
+// 	margin-top: $ppadding;
+//     }
+// }
+
+
+
+
+
+
+
+
+//  #######################
+//  ##### Phone-Menu neu ######
+//  #######################
+
+
+// Hamburger:
+$hb-abstandrechts: 1.5rem;
+$hb-abstandoben: 82vh;
+$hb-width: 3rem;
+$hb-height: 3rem;
+
+
+@include respond(tab-port) {
+    ;
+
+    .navigation {
+	
+	&__checkbox {
+	    display: none; // hacking checkbox verbergen
+	    
+	}
+
+	&__button {
+	    // background-color: tomato;
+	    // opacity: 50%;
+	    height: calc(#{$hb-height} + 1rem);
+	    width: calc(#{$hb-width} + 1rem);
+	    position: fixed;
+	    top: calc(#{$hb-abstandoben} - 0.5rem);
+	    right: calc(#{$hb-abstandrechts} - 0.5rem);
+	    border-radius: 50%;
+	    z-index: 2000;
+	    text-align: center;
+	    
+	}
+
+	&__background {
+	    display: inline;
+	    height: $hb-height;
+	    width: $hb-width;
+	    border-radius: 50%;
+	    position: fixed;
+	    top: $hb-abstandoben;
+	    right: $hb-abstandrechts;
+	    background-color: $basecolor;
+	    z-index: 99;
+	    transition: all .5s;
+	    box-shadow: .1rem .2rem .5rem -.05rem  black;
+	    
+	}
+
+	&__nav {
+	    height: 100vh;
+	    width: 0;
+	    position: fixed;
+	    top: 0;
+	    right: 0;
+	    z-index: 100;
+
+	    // unsichtbar im Normalzustand
+	    overflow: hidden;
+	    opacity: 0%; // fehlende Prozentangabe hat mobile Opera gestört
+	    transition: opacity .5s,  width .5s;
+	}
+
+	&__list {
+	    font-size: 1.5rem;
+	    @include absCenter;
+	    left: 100%;
+	    top: 100%; // 50% um nur von rechts einzufahren
+	    list-style: none;
+	    text-align: center;
+	    transition: top .5s, left .5s;
+	}
+
+	&__item {
+	    display: block;
+	    padding-top: .5rem;
+	    padding-bottom: .5rem;
+	    margin-left: auto;
+	    margin-right: auto;
+	    z-index: 3000;
+
+	    &:not(:last-child) { // den Spezialfall oben rückgängig machen
+		margin-right: 0;
+	    }
+
+
+	    
+	}
+
+	
+
+
+	// FUNCTIONALITY
+
+	&__checkbox:checked ~ &__background {
+    	    transform: scale(85);
+	}
+
+	&__checkbox:checked ~ &__nav {
+	    width: 100%;
+	    opacity: 100%;
+	}
+
+	
+	&__checkbox:checked ~ &__nav &__list {
+	    top: 50%;
+	    left: 50%;
+	}
+
+	&__hamburger {
+
+	    position: relative;
+	    margin-top: 2rem;
+	    background-color: orangered;
+
+	    &, &::before, &::after {
+		width: calc(#{$hb-width} * 0.6);
+		height: 3px;
+		background-color: $base-lighter;
+		display: inline-block;
+		border-radius: 25%;;
+
+	    }
+
+	    &::before, &::after {
+		position: absolute;
+		content: "";
+		left: 0;
+		transition: all .4s;
+		
+	    }
+
+	    &::before {
+		top: calc(#{$hb-width} * -0.2);
+	    }
+
+	    &::after{
+		top: calc(#{$hb-width} * 0.2);
+	    }
+	    
+	}
+
+	// &__button:hover &__hamburger::before {
+	// 	top: calc(#{$hb-width} * -0.25);
+	// }
+
+	// &__button:hover &__hamburger::after {
+	// 	top: calc(#{$hb-width} * 0.25);
+	// }
+
+	&__checkbox:checked + &__button &__hamburger {
+	    background-color: transparent;
+	}
+
+	&__checkbox:checked + &__button &__hamburger::before {
+	    transform: rotate(135deg);
+	    top: 0;
+	}
+
+	&__checkbox:checked + &__button &__hamburger::after {
+	    transform: rotate(-135deg);
+	    top: 0;
+	}    
+    }
+
+}
+
+
+
+ 
+
+.footer {
+    padding: $ppadding;
+    width: vw;
+    background-color: $basecolor;
+    color: $base-lighter;
+    
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+
+    &__menue {
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+    }
+
+    &__menueitem {
+	
+    }
+
+    &__copyright {
+	text-align: center;
+	margin-top: $ppadding;
+    }
+}

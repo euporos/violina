@@ -1,0 +1,31 @@
+
+.mainframe {
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 6rem;
+    margin-bottom: 8rem;
+    width: 95%;
+    text-align: center;
+    // max-width: 80rem;
+
+    &--fullwidth {
+	width: 100%;
+    }
+
+    &--home {
+	width: 100%;
+	padding-top: 1rem;
+	margin-bottom: 2.5rem;
+    }
+
+
+
+
+    @include respond(tab-port) {
+	padding-top: 0;
+    }
+
+    
+}
+
+

@@ -1,0 +1,88 @@
+
+
+.kuenstlerprevs {
+    // width: 80%;
+    text-align: center;
+    padding-top: 5%;
+    padding-bottom: 15%;
+
+}
+
+
+
+
+// .kprev {
+    
+//     transition: transform 0.5s, box-shadow 0.5s;
+
+//     @include hebeeffekt;
+
+//     &__name {
+
+// 	text-align: center;
+
+// 	font-variant: small-caps;
+
+// 	&:before {
+// 	    content: "— ";
+// 	}
+
+// 	&:after {
+// 	    content: " —";
+// 	}
+	
+//     }
+
+//     &__body {
+// 	text-align: center;
+// 	padding-bottom: $ppadding;
+// 	border-bottom: 3px solid $basecolor;
+//     }
+
+//     &__header {
+// 	font-variant: small-caps;
+// 	font-size: 2rem;
+// 	// box-sizing: content-box;
+// 	text-align: center;
+// 	padding-bottom: $ppadding;
+// 	border-bottom: 3px solid $basecolor;
+// 	margin-bottom: 1.3rem
+			   
+//     }
+    
+
+
+
+    
+// }
+
+
+.dummycell--besetzung {
+    height: 5rem;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.besetzung {
+    display: inline-block;
+
+    &__instrumentalist {
+	font-weight: bold;
+	// color: tomato;
+	text-align: right;
+    }
+
+    
+    &__instrument {
+	font-weight: bold;
+	// color: tomato;
+	text-align: left;
+    }
+
+    &__table {
+	th {
+	    padding-left: .2rem;
+	    padding-right: .2rem;
+	}
+    }
+}

@@ -1,0 +1,253 @@
+// //  ##################
+// //  #### Previews ####
+// //  ##################
+
+
+.progprevs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  grid-gap: 2rem;;
+  // grid-auto-columns: 3fr;
+  // grid-auto-rows: 5px, 1fr;
+
+
+  // &::before {
+  // content: '';
+  // width: 0;
+  // padding-bottom: 100%;
+  // grid-row: 1 / 1;
+  // grid-column: 1 / 1;
+  // }
+
+  // > *:first-child {
+  // grid-row: 1 / 1;
+  // grid-column: 1 / 1;
+  // }
+}
+
+
+.progprev {
+    // color:red;
+    background-color: $base-transparent;
+    border-radius: 1rem;
+    //height: 33vw;
+    padding: $ppadding;
+    transition: all 0.5s;
+    max-width: 30rem;
+    margin: $ppadding;
+    display: inline-block;
+    overflow: hidden;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+
+
+    &--vergangen {
+        filter: grayscale(100%);
+    }
+
+
+    @include hebeeffekt;
+
+    &__header {
+        font-variant: small-caps;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        border-bottom: 3px solid $basecolor;;
+    }
+
+    &__body {
+        text-align: justify;
+        margin-top: 1rem;
+        margin-bottom: 5rem;
+        overflow: hidden;
+            }
+
+    &__footer {
+        // border-bottom: 3px solid $basecolor;
+        margin-top: 2rem;
+        position: absolute;
+        // @include absCenter;
+        bottom: 1rem;
+        left: 50%;
+        -ms-transform: translate(-50%);
+        transform: translate(-50%);
+
+
+   }
+
+    &__mehrerfahren {
+        margin-top: 1rem;
+        color: $basecolor;
+        text-align: center;
+
+    }
+}
+
+
+// //  #######################
+// //  ##### Vollansicht #####
+// //  #######################
+
+.programm {
+
+    max-width: 50rem;
+    padding: calc(#{$ppadding} * 3);
+    background: $base-transparent-lighter;
+    width: 90%;
+ //   display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+
+    // &:not(:first-child) {
+    //  margin-top: 2rem;
+    // }
+
+    margin-bottom: 2rem;
+
+    &__performer {
+
+        text-align: center;
+        font-size: 1.5rem;
+
+        font-variant: small-caps;
+
+        &:before {
+            content: "— ";
+        }
+
+        &:after {
+            content: " —";
+        }
+
+    }
+
+    &__titel {
+        font-variant: small-caps;
+        font-size: 2rem;
+        // box-sizing: content-box;
+        text-align: center;
+        padding-bottom: $ppadding;
+        border-bottom: 3px solid $basecolor;
+        margin-bottom: 1.3rem
+
+    }
+
+    &__bild {
+
+
+        &--h {
+            width: 100%;
+            text-align: center;
+            margin-bottom: $ppadding;
+        }
+
+        &--v {
+            width: calc(50% - (#{$ppadding} / 2));
+            float: right;
+            padding-left: $ppadding;
+            padding-bottom: $ppadding;
+        }
+
+    }
+
+    &__setlist {
+
+        // display: absolute;
+        list-style-type:none;
+        margin-bottom: $ppadding;
+        // margin-top: $ppadding;
+        text-align: center;
+        width: calc(50% - (3 * #{$ppadding}));
+        border: 3px solid $basecolor;
+        padding: $ppadding;
+
+        &--h {
+            margin-left: $ppadding;
+            float: right;
+
+        }
+
+        &--v {
+            width: calc(50% + (#{$ppadding} / 2));
+            float: left;
+            margin-right: $ppadding;
+
+        }
+
+        // p {
+        //     b {
+        //      color: $basecolor;
+        //     }
+        // }
+
+        p:first-child {
+            margin-top:  calc(#{$ppadding} / 2);
+        }
+
+        p:not(:first-child) {
+            // margin-top: calc(#{$ppadding} / 2);
+            margin-top: 2rem;
+
+        }
+
+
+
+        @include respond(phone) {
+            float: none;
+            width: auto;
+            display: block;
+            margin: 0;
+        }
+    }
+
+    &__haupttext {
+        display: relative;
+        text-align:justify;
+
+
+        @include clearfix; // damit die Setlist nicht übersteht
+
+        p {
+            margin-top: $ppadding;
+        }
+    }
+
+
+    &__termine {
+        // color:tomato;
+        border-top: 3px solid $basecolor;
+        border-bottom: 3px solid $basecolor;
+        margin-top: $ppadding;
+        padding-top: $ppadding;
+        padding-bottom: $ppadding;
+        text-align: center;
+    }
+
+    &__terminankuendigung {
+        display: block;
+        color: $basecolor;
+        font-weight: bold;
+        margin-bottom: $ppadding;
+    }
+
+    &__termin {
+        width: 33%;
+        min-width: 20rem;
+        display: inline-block;
+        text-align: center;
+        margin-bottom: $ppadding;
+
+    }
+
+    &__terminstadt {
+        display: inline-block;
+    }
+
+    &__terminortname {
+        display: inline-block;
+    }
+
+}

@@ -1,0 +1,76 @@
+
+
+
+.zitat {
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    display: inline-block;   
+
+    &__text {
+	    font-size: 1.5rem;
+	    font-style: italic;
+	    display: inline-block;
+    }
+
+    &__quelle {	
+	margin-top: .2rem;
+    }
+}
+
+.quotemark {
+    content: "f";
+    font-size: 2rem;
+    // font-weight: bold;
+    line-height: 1.5rem;
+}
+
+
+.bestellformular {
+    text-align: center;
+}
+
+.widmungslabel {
+    display: block;
+    
+}
+
+.widmungsinput {
+    
+    display: block;
+    width:60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .5rem;
+    
+	      
+    
+}
+
+
+
+.cdinfo {
+    width: 66%;
+    float: left;
+    
+    @include respond(phone) {
+	float: none;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+    }
+
+}
+
+
+
+.kaufbutton {
+    background-color: $basecolor; /* Green */
+  border: none;
+  color: $base-lighter;
+  padding: .5rem 1rem;;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  cursor: pointer;
+}
