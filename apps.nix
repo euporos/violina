@@ -144,6 +144,14 @@ in
     '';
   };
 
+  # Repeatable: refresh content rows + uploads from prod into local PG.
+  # Assumes bootstrap-legacy has already populated the schema.
+  refresh-legacy = flake-utils.lib.mkApp {
+    drv = pkgs.writeShellScriptBin "festival-refresh-legacy" ''
+      exec nix develop .#default --command bash scripts/refresh_legacy_content.sh "$@"
+    '';
+  };
+
   # Clone production database to local dev
   clone-prod-db = mkApp "festival-clone-prod-db" ''
     export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
