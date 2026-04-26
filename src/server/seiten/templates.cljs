@@ -157,14 +157,23 @@
 (defn alternate-locales  [current-locale])
 
 (defn navbar [{:keys [locale] :as req}]
-  [:ul.navigation
-   [:li.navigation__item
-    [:a {:href (routing/reverse-match req :home {})} "Home"]]
-   [:li.navigation__item
-    [:a {:href (str (routing/reverse-match req :home {}) "#contact")}
-     (snip/kontakt locale)]]
-   (for [item (locale-switchers req)]
-     [:li.navigation__item.navigation__locale item])])
+  (let [link (fn [route-name label]
+               [:li.navigation__item
+                [:a {:href (routing/reverse-match req route-name {})} label]])]
+    [:ul.navigation
+     (link :home        (snip/home locale))
+     (link :termine     (snip/termine locale))
+     (link :programme   (snip/programme locale))
+     (link :kuenstler   (snip/kuenstler locale))
+     (link :cds         (snip/cds locale))
+     (link :medien      (snip/medien locale))
+     (link :galerie     (snip/galerie locale))
+     (link :presse      (snip/presse locale))
+     [:li.navigation__item
+      [:a {:href (str (routing/reverse-match req :home {}) "#contact")}
+       (snip/kontakt locale)]]
+     (for [item (locale-switchers req)]
+       [:li.navigation__item.navigation__locale item])]))
 (defn footer [{:keys [locale] :as req}]
   [:div.footer
    [:div.footer__menue]

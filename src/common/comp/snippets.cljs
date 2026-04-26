@@ -74,4 +74,44 @@
     {:en "Home"
      :de "Startseite"
      :uk "Головна"
-     :it "Pagina iniziale"}]])
+     :it "Pagina iniziale"}]
+
+   [termine
+    {:en "Calendar"
+     :de "Termine"
+     :uk "Календар"}]
+
+   [konzertliste
+    {:en "Concerts"
+     :de "Konzertliste"
+     :uk "Список концертів"}]
+
+   [kuenstler
+    {:en "Artists"
+     :de "Künstler"
+     :uk "Артисти"}]
+
+   [programme
+    {:en "Programs"
+     :de "Programme"
+     :uk "Програми"}]
+
+   [cds
+    {:en "Discs"
+     :de "Discs"
+     :uk "Диски"}]
+
+   [medien
+    {:en "Media"
+     :de "Medien"
+     :uk "Медіа"}]
+
+   [galerie
+    {:en "Gallery"
+     :de "Galerie"
+     :uk "Галерея"}]
+
+   [presse
+    {:en "Press"
+     :de "Presse"
+     :uk "Преса"}]])

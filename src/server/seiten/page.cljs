@@ -17,18 +17,18 @@
 (defhandler handler [req]
   (p/let [locale  (:locale req)
           page-id (routing/path-param req :page-id)
-          pages   (db/query {:select [s/pages-id
-                                      (db/localized s/pages-title locale)
-                                      (db/localized s/pages-content locale)]
-                             :from   [[s/pages_t s/pages]]
+          pages   (db/query {:select [s/sonderseiten-id
+                                      (db/localized s/sonderseiten-titel locale)
+                                      (db/localized s/sonderseiten-inhalt locale)]
+                             :from   [[s/sonderseiten_t s/sonderseiten]]
                              :where  [:= :id page-id]})
-          {:keys [content title]} (first pages)
-          tache-data (select-keys tache-data (tache/tags content))]
+          {:keys [titel inhalt]} (first pages)
+          tache-data (select-keys tache-data (tache/tags inhalt))]
     (p/let [rendered (templates/head-and-foot-dynamic
-                      req {:titel title}
+                      req {:titel titel}
                       [:div.section
-                       [:h1.title.is-1.has-text-centered title]
+                       [:h1.title.is-1.has-text-centered titel]
                        [:div.container
                         [:div.content
-                         (ph/dangerous-html (tache/render content tache-data))]]])]
+                         (ph/dangerous-html (tache/render inhalt tache-data))]]])]
       (ph/html->response rendered))))
