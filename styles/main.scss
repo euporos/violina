@@ -1,0 +1,253 @@
+@charset "utf-8";
+
+// ---------------------------------------------------------------------------
+// Bulma variable overrides (must precede the Bulma import)
+// Ported from src/common/style/variables.cljc `branded-dark-mode`.
+// ---------------------------------------------------------------------------
+
+$grey-dark:                          #ffffff;
+$grey-darker:                        #a6a6a6;
+$blue:                               hsl(44, 100%, 77%);
+$widescreen-enabled:                 false;
+$fullhd-enabled:                     false;
+$white:                              #262626;
+$footer-background-color:            #262626;
+$input-color:                        #ffffff;
+$navbar-item-hover-background-color: #000000;
+$navbar-item-color:                  #ffe08a;
+$body-background-color:              #000000;
+$control-border-width:               2px;
+$input-border-color:                 transparent;
+$input-shadow:                       none;
+
+@import '../node_modules/bulma/bulma.sass';
+
+// ---------------------------------------------------------------------------
+// Runtime color tokens exposed as CSS custom properties.
+// Only --link-color is read today (api/qr.cljs). The rest document intent.
+// ---------------------------------------------------------------------------
+
+:root {
+  --dark:             #000000;
+  --contrast-color:   #262626;
+  --text-color:       #ffffff;
+  --link-color:       #ffe08a;
+  --svg-color-light:  #ffe08a;
+}
+
+// ---------------------------------------------------------------------------
+// Site-specific rules (ported from style/toplevel.clj)
+// ---------------------------------------------------------------------------
+
+.hyphenate { hyphens: auto; }
+
+.test { color: tomato; }
+
+@media (min-width: 769px) {
+  .multi-column-text {
+    column-count: 2;
+    hyphens: auto;
+    column-gap: 1.5rem;
+  }
+}
+
+.card-image { overflow: hidden; }
+
+.card {
+  hyphens: auto;
+  &.is-fullheight { height: 100%; }
+  img { transition: all 0.3s; }
+}
+
+.card:hover img { transform: scale(1.03); }
+
+.program li { list-style-type: none; }
+
+.scrollable-program {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: 450px;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.navbar { background-color: var(--contrast-color); }
+
+.modal-content {
+  max-width: calc(100vw - 60px);
+  max-height: calc(100vh - 60px);
+  width: auto;
+  img {
+    max-width: calc(100vw - 70px);
+    max-height: calc(100vh - 70px);
+  }
+}
+
+.modal-close:after,
+.modal-close:before { background-color: white; }
+
+// ---------------------------------------------------------------------------
+// Floating-note animation (ported from style/notes.clj)
+// ---------------------------------------------------------------------------
+
+@keyframes notes {
+  0%   { transform: scale(1)   translate(0,    0);     opacity: 0; }
+  50%  { transform: scale(1.5) translate(50%,  -50%);  opacity: 1; }
+  80%  { transform: scale(1.5) translate(100%, -100%); opacity: 0; }
+  100% { transform: scale(1.5) translate(100%, -100%); opacity: 0; }
+}
+
+.notes-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.notes {
+  color: white;
+  display: block;
+  margin: auto;
+  position: relative;
+  width: 50%;
+  min-width: 300px;
+  height: 200px;
+  border: 0px solid #ccc;
+}
+
+.note-1, .note-2, .note-3, .note-4 {
+  position: absolute;
+  animation: notes 2s infinite linear;
+  font-size: 35px;
+  opacity: 0;
+}
+
+.note-1 { top: 60px; left: 0;   animation-delay: 0.5s; }
+.note-2 { top: 30px; left: 30%; animation-delay: 1s;   }
+.note-3 { top: 90px; left: 60%; animation-delay: 1.5s; }
+.note-4 { top: 40px; left: 90%; animation-delay: 2s;   }
+
+// ---------------------------------------------------------------------------
+// Spinner / bouncing-note animation (ported from style/spinner.clj)
+// ---------------------------------------------------------------------------
+
+@keyframes jump_one {
+  0%   { transform: translate(0,   0px) rotate(0deg);   }
+  5%   { transform: translate(0,   0px) rotate(0deg);   }
+  40%  { transform: translate(0, -16px) rotate(-30deg); }
+  60%  { transform: translate(0, -16px) rotate(-30deg); }
+  100% { transform: translate(0,   0px) rotate(0deg);   }
+}
+
+@keyframes jump_two {
+  0%   { transform: translate(0,   0px) rotate(0deg);  }
+  5%   { transform: translate(0,   0px) rotate(0deg);  }
+  40%  { transform: translate(0, -28px) rotate(10deg); }
+  60%  { transform: translate(0, -28px) rotate(10deg); }
+  100% { transform: translate(0,   0px) rotate(0deg);  }
+}
+
+@keyframes jump_three {
+  0%   { transform: translate(0,   0px) rotate(0deg);  }
+  5%   { transform: translate(0,   0px) rotate(0deg);  }
+  40%  { transform: translate(0, -20px) rotate(30deg); }
+  60%  { transform: translate(0, -20px) rotate(30deg); }
+  100% { transform: translate(0,   0px) rotate(0deg);  }
+}
+
+@keyframes grow {
+  0%   { height: 0px;  }
+  3%   { height: 0px;  }
+  50%  { height: 22px; }
+  70%  { height: 10px; }
+  100% { height: 0px;  }
+}
+
+@keyframes grow_three {
+  0%   { height: 0px;  }
+  3%   { height: 17px; }
+  45%  { height: 17px; }
+  55%  { height: 17px; }
+  70%  { height: 0px;  }
+  100% { height: 0px;  }
+}
+
+@keyframes grow_tail {
+  0%   { height: 0px;  }
+  50%  { height: 17px; }
+  60%  { height: 12px; }
+  77%  { height: 12px; }
+  84%  { height: 12px; }
+  100% { height: 0px;  }
+}
+
+.centre {
+  width: 150px;
+  justify-content: center;
+  height: 1px;
+  margin: auto;
+  flex-direction: row;
+  position: relative;
+  margin-top: 299px;
+  border-top: 1px #f2f2f2 solid;
+  display: flex;
+}
+
+.note {
+  width: 15px;
+  height: 15px;
+  transform: translate(0, 0) rotate(0deg);
+  position: absolute;
+  border-radius: 50%;
+  display: block;
+  bottom: 1px;
+  background: black;
+  color: black;
+}
+
+.note:after {
+  display: block;
+  position: absolute;
+  content: '';
+  width: 15px;
+  height: 15px;
+  bottom: -8px;
+  right: 0px;
+  border-right: 3px black solid;
+}
+
+.one   { margin-left: -30px; animation: jump_one   1s infinite; animation-delay: 50ms;  }
+.two   { margin-left:   0px; animation: jump_two   1s infinite; animation-delay: 300ms; }
+.three { margin-left:  30px; animation: jump_three 1s infinite; animation-delay: 400ms; }
+
+.note.one:after   { height: 0px; bottom: 10px; animation: grow       1s infinite; animation-delay: 50ms;  }
+.note.two:after   { height: 0px; bottom: 10px; animation: grow       1s infinite; animation-delay: 300ms; }
+.note.three:after { height: 0px; bottom:  9px; animation: grow_three 1s infinite; animation-delay: 400ms; }
+
+.note.three:before {
+  width: 9px;
+  height: 0px;
+  transform: rotate(40deg);
+  position: absolute;
+  animation: grow_tail 1.05s infinite;
+  border-top: 3px black solid;
+  content: '';
+  border-radius: 10px;
+  display: block;
+  bottom: 24px;
+  left: 11px;
+}
+
+.note.two:before {
+  width: 9px;
+  height: 0px;
+  transform: rotate(40deg);
+  position: absolute;
+  animation: grow_tail 1s infinite;
+  border-top: 3px black solid;
+  content: '';
+  border-radius: 12px;
+  display: block;
+  bottom: 27px;
+  left: 11px;
+}

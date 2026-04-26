@@ -1,0 +1,30 @@
+{:deps {:aliases [:shadow-cljs]}
+ :nrepl {:port 9000}
+ :builds {:server {:target     :node-script
+                   :output-to  "server/server.js"
+                   :output-dir "server"
+                   :main       serving.core/serve
+                   :devtools   {:http-root "public"}
+                   :compiler-options
+                   {:reader-features #{:node}
+                    :optimizations      :simple
+                    :output-feature-set :es6
+                    :infer-externs      false}}
+          :browser {:target     :browser
+
+                    :output-dir "public/compiled/js"
+                    :asset-path "/compiled/js" ; entscheidend für location der Source Maps
+                    :modules    {:app {:init-fn app.core/main
+                                       :preloads [devtools.preload
+                                                  day8.re-frame-10x.preload]
+                                       :entries [app.router
+                                                 app.admin
+                                                 app.modal
+                                                 app.obfuscate]}}
+                    :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true}}}
+                    :devtools   {:watch-dir "public/compiled/bundle"
+                                 :watch-path "/compiled/bundle"}
+                    :compiler-options
+                    {:infer-externs :auto}
+                    ;; :dev        {:closure-defines {re-frame.trace.trace-enabled? true}}
+                    }}}

@@ -1,0 +1,14 @@
+LOAD DATABASE
+     FROM      mysql://directus:password@127.0.0.1:3306/festival_directus
+     INTO postgresql://directus:password@127.0.0.1:5435/directus
+
+WITH data only, truncate, reset sequences, preserve index names,
+     quote identifiers,
+     include no drop, create no tables, create no indexes
+
+SET PostgreSQL PARAMETERS
+     maintenance_work_mem to '128MB',
+     work_mem to '12MB'
+
+ALTER SCHEMA 'festival_directus' RENAME TO 'public'
+;

@@ -1,0 +1,126 @@
+version: "0.5"
+
+log_location: .nix-shell/process-compose.log
+
+processes:
+  mariadb:
+    command: |
+      if [ ! -d "$MYSQL_DATADIR" ]; then
+        echo "Initializing MariaDB data directory..."
+        mysql_install_db --auth-root-authentication-method=normal \
+          --datadir=$MYSQL_DATADIR --basedir=$MYSQL_BASEDIR \
+          --pid-file=$MYSQL_PID_FILE --port 3306
+      fi
+
+      exec mysqld --datadir=$MYSQL_DATADIR \
+        --pid-file=$MYSQL_PID_FILE \
+        --socket=$MYSQL_UNIX_PORT \
+        --port=3306
+    readiness_probe:
+      exec:
+        command: "mysqladmin -u root --socket=$MYSQL_UNIX_PORT ping"
+      initial_delay_seconds: 3
+      period_seconds: 2
+      timeout_seconds: 5
+      failure_threshold: 10
+    shutdown:
+      command: "mysqladmin -u root --socket=$MYSQL_UNIX_PORT shutdown"
+      timeout_seconds: 15
+    availability:
+      restart: "no"
+
+  postgres:
+    command: |
+      mkdir -p "$PGHOME"
+      if [ ! -d "$PGDATA" ]; then
+        echo "Initializing PostgreSQL data directory..."
+        initdb --auth-local=trust --auth-host=scram-sha-256 \
+          --username=postgres --encoding=UTF8 --locale=C
+      fi
+
+      exec postgres -D "$PGDATA" \
+        -k "$PGHOST" \
+        -c listen_addresses=localhost \
+        -c port=$PGPORT
+    readiness_probe:
+      exec:
+        command: "pg_isready -h $PGHOST -p $PGPORT"
+      initial_delay_seconds: 3
+      period_seconds: 2
+      timeout_seconds: 5
+      failure_threshold: 10
+    shutdown:
+      command: "pg_ctl stop -D $PGDATA -m fast"
+      timeout_seconds: 15
+    availability:
+      restart: "no"
+
+  shadow-cljs:
+    command: |
+      rm -f server/server.js
+      exec npx shadow-cljs watch browser server
+    depends_on:
+      mariadb:
+        condition: process_healthy
+    readiness_probe:
+      exec:
+        command: "test -f server/server.js"
+      initial_delay_seconds: 10
+      period_seconds: 5
+      timeout_seconds: 3
+      failure_threshold: 60
+    availability:
+      restart: "on_failure"
+      max_restarts: 3
+
+  vite:
+    command: "npx vite build --watch"
+    availability:
+      restart: "on_failure"
+      max_restarts: 3
+
+  statics-init:
+    command: |
+      rm -rf public/compiled/from_reservoir
+      mkdir -p public/compiled/from_reservoir
+      clj -X:process-reservoir :from-scratch? true
+      if ls reservoir/imgs/*.JPG >/dev/null 2>&1; then
+        bash scripts/resize_images.sh reservoir/imgs/*.JPG
+      fi
+    availability:
+      restart: "no"
+
+  watch-reservoir:
+    command: "clj -X:watch-reservoir"
+    depends_on:
+      statics-init:
+        condition: process_completed_successfully
+    availability:
+      restart: "on_failure"
+      max_restarts: 3
+
+  app-server:
+    command: "node server/server.js"
+    depends_on:
+      mariadb:
+        condition: process_healthy
+      postgres:
+        condition: process_healthy
+      shadow-cljs:
+        condition: process_healthy
+      statics-init:
+        condition: process_completed_successfully
+    availability:
+      restart: "on_failure"
+      max_restarts: 3
+
+  directus:
+    command: "cd directus && npx directus start"
+    depends_on:
+      mariadb:
+        condition: process_healthy
+      postgres:
+        condition: process_healthy
+    availability:
+      restart: "on_failure"
+      max_restarts: 3

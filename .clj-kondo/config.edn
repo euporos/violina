@@ -1,0 +1,3 @@
+{:lint-as {macchiato-async.core/defhandler clojure.core/defn
+           kitchen-async.promise/let clojure.core/let}
+ :config-in-ns {comp.snippets {:linters {:unresolved-symbol {:level :off}}}}}

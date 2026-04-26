@@ -1,0 +1,25 @@
+{:email-to-b64 "cGlhbm9AdmlvbGluYS1wZXRyeWNoZW5rby5kZQ=="
+ :devmode? true
+ :show-errors? true
+ :mail-on-errors? false
+ :port 5001
+ :posthog {:project-id "phc_G3PIX4ZsFbQkH1LyK32r5OVlzNaEJposa1P8y5K2vV1"
+           :host "https://eu.posthog.com"}
+ :frontend {:prefill-forms? false}
+ :db-config {:host "localhost"
+             :user "test_user"
+             :db-name "test_db"
+             :port 3306
+             :password ""}
+ :admin-email "technical@olivermotz.com"
+ :admin-email-transporter {:host   "mx2ff9.netcup.net"
+                           :port   465
+                           :secure true
+                           :auth   {:user "technical@olivermotz.com"}}
+ :violinas-email "technical@olivermotz.com"; "piano@violina-petrychenko.de"
+ :violinas-phone "+49 176/615 25 86 8"
+ :admin-password "$2b$11$k3QxJiTBUuYY6Q8n8gmQueBJTeKOkdhoxp0WWU/W4xWoCOKQY2p0a"
+ :email-transporter {:host   "mx2ff9.netcup.net"
+                     :port   465
+                     :secure true
+                     :auth   {:user "info@sounds-of-ukraine.de"}}}

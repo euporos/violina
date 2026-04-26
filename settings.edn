@@ -1,0 +1,38 @@
+{:merge-config "../settings.edn"
+ :directus-url    "/directus/"
+ :canonical-domain "example.com"
+ :site-name      "Macchiato Template"
+ :google-site-verfication ""
+ :print-sql false
+ :host "0.0.0.0"
+ :port 3000
+ :locale-fallback [:de :en :uk] ; muss alle Sprachen enthalten
+ :mode   :dev
+ :share-with-frontend [:locale-fallback
+                       :site-name
+                       :directus-url
+                       :mode
+                       :noindex
+                       :show-errors?]
+ :noindex true
+ :show-errors? true ;false
+ :mail-on-errors? false
+ :directus {:translations-key :translations
+            :language-key :languages_code}
+
+ :contact-email "info@example.com"
+ :contact-phone "+49 000 0000000"
+
+ ;; Required secrets — values come from ../settings.edn (parent, untracked).
+ :admin-email     #psite/secret "admin-email"
+ :admin-password  #psite/secret "admin-password"
+ :email-transporter {:host   "mx2ff9.netcup.net"
+                     :port   465
+                     :secure true
+                     :auth   {:user #psite/secret "smtp-user"
+                              :pass #psite/secret "smtp-pass"}}
+ :db-config {:host    "localhost"
+             :user    "directus"
+             :port    5435
+             :db-name "directus"
+             :password #psite/secret "db-password"}}
