@@ -12,3 +12,13 @@
     [:section.section
      [:div.container
       [:h1.title "Termine — TODO"]]])))
+
+(defhandler handler-einzel [req]
+  (ph/html->response
+   (templates/head-and-foot-blank
+    req
+    {:titel "Termin"}
+    {}
+    [:section.section
+     [:div.container
+      [:h1.title "Termin — TODO"]]])))

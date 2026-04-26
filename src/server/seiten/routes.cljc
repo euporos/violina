@@ -8,6 +8,7 @@
              [seiten.konzertliste :as konzertliste]
              [seiten.kuenstler :as kuenstler]
              [seiten.page :as page]
+             [seiten.permanent :as permanent]
              [seiten.presse :as presse]
              [seiten.programme :as programme]
              [seiten.termine :as termine]
@@ -20,8 +21,18 @@
    [["/" {:name    :home
           :handler home/handler}]
 
-    ["/termine" {:name    :termine
+    ["/p/{id}" {:name       :permanent
+                :handler    permanent/handler
+                :parameters {:path [[:id permanent/param-spec]]}}]
+
+    ["/termine"
+     ["" {:name    :termine
+          :handler termine/handler}]
+     ["-archiv" {:name    :termine-archiv
                  :handler termine/handler}]
+     ["/{termin-id}" {:name       :termin-einzelansicht
+                      :handler    termine/handler-einzel
+                      :parameters {:path [[:termin-id :int]]}}]]
 
     ["/konzertliste" {:name    :konzertliste
                       :handler konzertliste/handler}]
@@ -29,11 +40,13 @@
     ["/programme"
      ["" {:name    :programme
           :handler programme/handler}]
-     ["/{programm-id}" {:name       :programm
-                        :handler    programme/single-handler
-                        :directus   {:collection "programme"
-                                     :params     {:programm-id "id"}}
-                        :parameters {:path [[:programm-id :int]]}}]]
+     ["/{programm-id}-{programm-slug}" {:name       :programm
+                                        :handler    programme/single-handler
+                                        :directus   {:collection    "programme"
+                                                     :params        {:programm-id "id"}
+                                                     :static-params {:programm-slug "view"}}
+                                        :parameters {:path [[:programm-id   :int]
+                                                            [:programm-slug :string]]}}]]
 
     ["/kuenstler"
      ["" {:name    :kuenstler
