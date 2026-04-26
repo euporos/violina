@@ -8,7 +8,7 @@
              [seiten.konzertliste :as konzertliste]
              [seiten.kuenstler :as kuenstler]
              [seiten.page :as page]
-             [seiten.permanent :as permanent]
+             #_[seiten.permanent :as permanent]
              [seiten.presse :as presse]
              [seiten.programme :as programme]
              [seiten.termine :as termine]
@@ -21,9 +21,9 @@
    [["/" {:name    :home
           :handler home/handler}]
 
-    ["/p/{id}" {:name       :permanent
-                :handler    permanent/handler
-                :parameters {:path [[:id permanent/param-spec]]}}]
+    #_["/p/{id}" {:name       :permanent
+                  :handler    permanent/handler
+                  :parameters {:path [[:id permanent/param-spec]]}}]
 
     ["/termine"
      ["" {:name    :termine

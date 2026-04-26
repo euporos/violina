@@ -100,8 +100,7 @@
   (p/let [locale       (:locale req)
           kuenstler-id (routing/path-param req :kuenstler-id)
           slug         (routing/path-param req :kuenstler-slug)
-          kuenstler    (first
-                        (db/query
+          kuenstler-rows (db/query
                          {:select    [s/kuenstler-id
                                       s/kuenstler-slug
                                       s/kuenstler-bild
@@ -114,8 +113,9 @@
                                       [:directus_files.height :bild_height]]
                           :from      [[s/kuenstler_t s/kuenstler]]
                           :left-join [:directus_files [:= :directus_files.id s/kuenstler-bild]]
-                          :where     [:= s/kuenstler-id kuenstler-id]}))
-          true-slug    (putils/slugify (or (:slug kuenstler) (str kuenstler-id)))]
+                          :where     [:= s/kuenstler-id kuenstler-id]})
+          kuenstler      (first kuenstler-rows)
+          true-slug      (putils/slugify (or (:slug kuenstler) (str kuenstler-id)))]
     (if-not (= slug true-slug)
       (r/see-other
        (routing/reverse-match req :kuenstler-single
