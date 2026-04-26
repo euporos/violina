@@ -1,2 +1,62 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
-@import url('https://fonts.googleapis.com/css?family=Lora&display=swap');
+// Self-hosted to avoid third-party requests to Google Fonts.
+// Montserrat woff/woff2 carried over from the legacy site (latin + cyrillic).
+// Lora woff2 fetched from fonts.gstatic.com via google-webfonts-helper.
+
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/montserrat-v24-latin_cyrillic-regular.woff2') format('woff2'),
+         url('/fonts/montserrat-v24-latin_cyrillic-regular.woff')  format('woff');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/montserrat-v24-latin_cyrillic-italic.woff2') format('woff2'),
+         url('/fonts/montserrat-v24-latin_cyrillic-italic.woff')  format('woff');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/montserrat-v24-latin_cyrillic-600.woff2') format('woff2'),
+         url('/fonts/montserrat-v24-latin_cyrillic-600.woff')  format('woff');
+}
+
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/lora-v37-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Lora';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/lora-v37-latin-italic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/lora-v37-latin-700.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Lora';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/lora-v37-latin-700italic.woff2') format('woff2');
+}
