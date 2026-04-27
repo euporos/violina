@@ -12,10 +12,10 @@
         psite/psite-i18n       {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-i18n"}
         psite/psite-mail       {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-mail"}
         psite/psite-menu       {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-menu"}
-        psite/psite-middleware {:local/root "../../psite/psite-middleware"}
+        psite/psite-middleware {:git/url "git@github.com:euporos/psite.git" :git/sha "71d5337fb5d88e26e929e96e6ee26a83120825cd" :deps/root "psite-middleware"}
         psite/psite-mysql2     {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-mysql2"}
         psite/psite-pg         {:git/url "git@github.com:euporos/psite.git" :git/sha "3f3f948694674dd002e04df123e9da66b318016c" :deps/root "psite-pg"}
-        psite/psite-routing    {:local/root "../../psite/psite-routing"}
+        psite/psite-routing    {:git/url "git@github.com:euporos/psite.git" :git/sha "71d5337fb5d88e26e929e96e6ee26a83120825cd" :deps/root "psite-routing"}
         psite/psite-rate-limit {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-rate-limit"}
         psite/psite-transit    {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-transit"}
         psite/psite-seo        {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-seo"}
