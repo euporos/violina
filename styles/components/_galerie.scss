@@ -1,13 +1,13 @@
 .pswp__galerie-footer {
     position: absolute;
     z-index: 1700;
-    padding: 0.6rem 1rem;
+    padding: 0.3rem 1rem;
     background: $base-lighter;
     border-top: 3px solid $basecolor;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
     box-sizing: border-box;
-    height: 48px;
 }

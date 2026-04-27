@@ -2,7 +2,7 @@ import 'photoswipe/style.css';
 import '../styles/main.scss';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
-const FOOTER_HEIGHT = 48;
+const FOOTER_HEIGHT = 30;
 
 const lightbox = new PhotoSwipeLightbox({
   gallery: '.pswp-gallery',
