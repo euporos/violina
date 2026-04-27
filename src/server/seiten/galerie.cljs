@@ -9,21 +9,22 @@
             [seiten.templates :as templates]))
 
 (defn- thumbnail [{:keys [bild width height beschreibung]}]
-  [:a.galerie__thumb
+  [:a.galerie__vorschaubild
    {:href             (d/image-by-preset "w1200" bild)
     :data-pswp-width  width
     :data-pswp-height height
     :target           "_blank"}
-   [:img.galerie__thumb-img
-    {:src     (d/image-by-preset "w600" bild)
-     :loading "lazy"
-     :alt     (or beschreibung "")}]])
+   [:img {:src     (d/image-by-preset "400crop" bild)
+          :width   "100%"
+          :loading "lazy"
+          :alt     (or beschreibung "")}]])
 
 (defn- kuenstler-section [{:keys [name images]}]
-  [:section.galerie__section
-   [:h2.galerie__heading name]
-   [:div.galerie__grid.pswp-gallery
-    (map thumbnail images)]])
+  [:div.sheet
+   [:div.sheet__header name]
+   [:div.sheet__body
+    [:div.galerie.pswp-gallery
+     (map thumbnail images)]]])
 
 (defhandler handler [req]
   (p/let [locale   (:locale req)
@@ -48,6 +49,5 @@
           rendered (templates/head-and-foot-dynamic
                     req {:titel (snip/galerie locale)}
                     [:div.mainframe
-                     [:div.galerie
-                      (map kuenstler-section sections)]])]
+                     (map kuenstler-section sections)])]
     (ph/html->response rendered)))
