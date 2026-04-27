@@ -171,11 +171,17 @@
   [:li.navigation__item [:a {:href href} name]])
 
 (defn navbar [req dynamic-menus]
-  [:ul.navigation
-   (for [item (pmenu/compose-menus (basemenu req) (or dynamic-menus {}))]
-     (render-menuitem item))
-   [:li.navigation__item.navigation__item--locale
-    (locale-switchers req)]])
+  [:div.navigation
+   [:input#navi-toggle.navigation__checkbox {:type "checkbox"}]
+   [:label.navigation__button {:for "navi-toggle"}
+    [:span.navigation__hamburger]]
+   [:div.navigation__background]
+   [:nav.navigation__nav
+    [:div.navigation__list
+     (for [item (pmenu/compose-menus (basemenu req) (or dynamic-menus {}))]
+       (render-menuitem item))
+     [:li.navigation__item.navigation__item--locale
+      (locale-switchers req)]]]])
 
 (defn sonderseite->menuitem [req {:keys [id slug titel menue]}]
   {:type        :menuitem
