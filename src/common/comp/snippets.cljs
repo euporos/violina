@@ -123,7 +123,37 @@
     {:en "Teaching"
      :de "Pädagogik"
      :uk "Педагогіка"
-     :it "Insegnamento"}]])
+     :it "Insegnamento"}]
+
+   [foto
+    {:de "Foto"
+     :en "Photography"
+     :uk "Фото"
+     :it "Foto"}]
+
+   [vollaufloesung
+    {:de "Vollauflösung"
+     :en "Full resolution"
+     :uk "Повний розмір"
+     :it "Piena risoluzione"}]
+
+   [pressespiegel
+    {:de "Pressespiegel"
+     :en "Press review"
+     :uk "Огляд преси"
+     :it "Rassegna stampa"}]
+
+   [weiterlesen
+    {:de "weiterlesen"
+     :en "read more"
+     :uk "читати далі"
+     :it "continuare a leggere"}]
+
+   [zumoriginal
+    {:de "Zum Original"
+     :en "to the original"
+     :uk "до оригіналу"
+     :it "all'originale"}]])
 
 (defsnips loc/fallback
   [[violina

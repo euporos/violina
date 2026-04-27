@@ -1,0 +1,15 @@
+.pswp__galerie-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1700;
+    padding: 0.75rem 1.25rem;
+    background: $base-lighter;
+    border-top: 3px solid $basecolor;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
