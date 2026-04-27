@@ -6,6 +6,7 @@
             [macchiato-async.core :refer-macros [defhandler]]
             [psite-hiccup.core :as ph]
             [psite-routing.core :as routing]
+            [seiten.components.common :as cmn]
             [seiten.templates :as templates])
   (:require-macros
    [hiccups.core :refer [html]]))
@@ -18,17 +19,23 @@
   (p/let [locale  (:locale req)
           page-id (routing/path-param req :page-id)
           pages   (db/query {:select [s/sonderseiten-id
+                                      s/sonderseiten-bild
+                                      s/sonderseiten-bildlayout
                                       (db/localized s/sonderseiten-titel locale)
-                                      (db/localized s/sonderseiten-inhalt locale)]
+                                      (db/localized s/sonderseiten-inhalt locale)
+                                      (db/localized s/sonderseiten-meta_description locale)]
                              :from   [[s/sonderseiten_t s/sonderseiten]]
                              :where  [:= :id page-id]})
-          {:keys [titel inhalt]} (first pages)
-          tache-data (select-keys tache-data (tache/tags inhalt))]
-    (p/let [rendered (templates/head-and-foot-dynamic
-                      req {:titel titel}
-                      [:div.section
-                       [:h1.title.is-1.has-text-centered titel]
-                       [:div.container
-                        [:div.content
-                         (ph/dangerous-html (tache/render inhalt tache-data))]]])]
-      (ph/html->response rendered))))
+          {:keys [titel inhalt bild bildlayout meta_description]} (first pages)
+          tache-data (select-keys tache-data (tache/tags (or inhalt "")))
+          rendered (templates/head-and-foot-dynamic
+                    req {:titel        titel
+                         :beschreibung meta_description}
+                    [:div.mainframe
+                     [:div.sheet
+                      [:div.sheet__header titel]
+                      [:div.sheet__body
+                       (cmn/format-sheet-image bildlayout bild)
+                       [:div.sheet__fliesstext
+                        (ph/dangerous-html (tache/render (or inhalt "") tache-data))]]]])]
+    (ph/html->response rendered)))

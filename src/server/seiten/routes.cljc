@@ -28,8 +28,6 @@
     ["/termine"
      ["" {:name    :termine
           :handler termine/handler}]
-     ["-archiv" {:name    :termine-archiv
-                 :handler termine/handler}]
      ["/{termin-id}" {:name       :termin-einzelansicht
                       :handler    termine/handler-einzel
                       :parameters {:path [[:termin-id :int]]}}]]

@@ -124,3 +124,77 @@
      :de "Pädagogik"
      :uk "Педагогіка"
      :it "Insegnamento"}]])
+
+(defsnips loc/fallback
+  [[violina
+    {:de "Violina" :en "Violina" :uk "Віоліна"}]
+   [petrychenko
+    {:de "Petrychenko" :en "Petrychenko" :uk "Петриченко"}]
+   [mehr
+    {:de "mehr" :en "more" :uk "більше" :it "più"}]
+   [konzert
+    {:de "Konzert" :en "concert" :uk "концерт" :it "concerto"}]
+   [programm
+    {:de "Programm" :en "Program" :uk "Програма" :it "Programma"}]
+   [eintritt
+    {:de "Eintritt" :en "Fee" :uk "Вхід" :it "Entrata"}]
+   [veranstalterlink
+    {:de "Infos/Karten beim Veranstalter"
+     :en "More info/Tickets"
+     :uk "Більше інформації та квитки"
+     :it "un più informazione"}]
+   [abgesagt
+    {:de "fällt aus" :en "cancelled" :uk "відмінено" :it "annullato"}]
+   [aeltere-termine
+    {:de "Ältere Termine anzeigen"
+     :en "Show older concerts"
+     :uk "Показати старіші концерти"
+     :it "Mostra concerti più vecchi"}]
+   [kein-konzert-mehr-verpassen
+    {:de "Kein Konzert mehr verpassen?"
+     :en "Don't want to miss another concert?"
+     :uk "Не пропустити концерт?"}]
+   [subscribe-to-ical
+    {:de "Abonnieren Sie hier meinen Kalender"
+     :en "Subscribe to my calendar here"
+     :uk "Підпишіться на мій календар"}]
+   [home-konzerte
+    {:de "Die nächsten Konzerte"
+     :en "Upcoming Concerts"
+     :uk "Наступні концерти"
+     :it "Prossimi eventi"}]
+   [home-presse
+    {:de "Aktuelle Pressestimmen"
+     :en "The Current Press"
+     :uk "Актуальна преса"
+     :it "La pressa attuale"}]
+   [meine-neue-cd
+    {:de "Meine Neue CD – jetzt bestellen"
+     :en "My new Disc – order here"
+     :uk "Новий диск – замовити зараз"
+     :it "La mia nuova CD – prenotare ora"}]
+   [zdf
+    {:de "Violina Petrychenko im ZDF Morgenmagazin"
+     :en "Violina on German State TV"
+     :uk "Віоліна Петриченко на центральному телебаченні Німеччини"
+     :it "Violina Petrychenko su ZDF"}]
+   [termine-programm
+    {:de "Erleben Sie dieses Programm an folgenden Terminen:"
+     :en "Experience this program during these concerts:"
+     :uk "Почути цю програму можна:"
+     :it "Sentire questo programma nelle seguenti date"}]
+   [nochkeinetermine-programm
+    {:de "Es gibt noch keine Konzerte mit diesem Programm"
+     :en "There are no concerts featuring this program"
+     :uk "Ще немає концертів з цією програмою"
+     :it "Non ci sono concerti con questo programma"}]
+   [beiinteresse
+    {:de "Bei Interesse an diesem Programm "
+     :en "If you're interested in this program "
+     :uk "Якщо ви цікавитися цією програмою, "
+     :it "Se sa interessato a questo programma "}]
+   [kontaktierensiemich
+    {:de "kontaktieren Sie mich"
+     :en "feel free to contact me"
+     :uk "зверніться будь ласка до мене"
+     :it "contattami"}]])
