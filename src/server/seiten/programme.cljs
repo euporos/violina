@@ -61,32 +61,28 @@
 ;; ### Einzelansicht
 ;; ##################
 
-(defn- qualified-coalesce
-  "Build a COALESCE over `<alias>.<field>_<lang>` columns; aliased as `out-key`."
-  [alias field locale fallback-order out-key]
-  (let [chain (into [locale] (remove #{locale} fallback-order))]
-    [(into [:coalesce]
-           (map #(keyword (str (name alias) "." field "_" (name %))) chain))
-     out-key]))
+;; NOTE: programm and kuenstler are queried separately rather than joined,
+;; because joining `programme_t` and `kuenstler_t` makes their overlapping
+;; translation columns (`beschreibung_de`, `meta_description_de`) ambiguous
+;; in the COALESCEs that `db/localized` emits. See psite/directus-schema.
 
-(def fallback [:de :en :uk])
-
-(defn- single-query [locale id]
-  {:select    [s/programme-id s/programme-slug s/programme-bild s/programme-vertikal
-               (qualified-coalesce :programme "titel"        locale fallback :titel)
-               (qualified-coalesce :programme "beschreibung" locale fallback :beschreibung)
-               (qualified-coalesce :programme "stuecke"      locale fallback :stuecke)
-               [:kuenstler.id   :kuenstler_id]
-               [:kuenstler.slug :kuenstler_slug]
-               (qualified-coalesce :kuenstler "name" locale fallback :kuenstler_name)
+(defn- programm-query [locale id]
+  {:select    [s/programme-id s/programme-slug s/programme-kuenstler
+               s/programme-bild s/programme-vertikal
+               (db/localized s/programme-titel locale)
+               (db/localized s/programme-beschreibung locale)
+               (db/localized s/programme-stuecke locale)
                [:directus_files.width  :bild_width]
                [:directus_files.height :bild_height]]
    :from      [[s/programme_t :programme]]
-   :left-join [[s/kuenstler_t :kuenstler]
-               [:= s/programme-kuenstler :kuenstler.id]
-               :directus_files
-               [:= :directus_files.id s/programme-bild]]
+   :left-join [:directus_files [:= :directus_files.id s/programme-bild]]
    :where     [:= s/programme-id id]})
+
+(defn- kuenstler-mini-query [locale kuenstler-id]
+  {:select [s/kuenstler-id s/kuenstler-slug
+            (db/localized s/kuenstler-name locale)]
+   :from   [[s/kuenstler_t s/kuenstler]]
+   :where  [:= s/kuenstler-id kuenstler-id]})
 
 (defn- termine-for-programm-query [locale programm-id]
   (let [today (t.format/unparse (t.format/formatters :date) (t/now))]
@@ -138,12 +134,12 @@
          (snip/kontaktierensiemich locale)] "."])]]))
 
 (defhandler single-handler [req]
-  (p/let [locale       (:locale req)
-          id           (routing/path-param req :programm-id)
-          slug         (routing/path-param req :programm-slug)
-          rows         (db/query (single-query locale id))
-          programm     (first rows)
-          true-slug    (or (some-> (:slug programm) putils/slugify) (str id))]
+  (p/let [locale     (:locale req)
+          id         (routing/path-param req :programm-id)
+          slug       (routing/path-param req :programm-slug)
+          progr-rows (db/query (programm-query locale id))
+          programm   (first progr-rows)
+          true-slug  (or (some-> (:slug programm) putils/slugify) (str id))]
     (cond
       (nil? programm)
       (r/not-found (str "Programm " id " not found"))
@@ -155,13 +151,23 @@
                                :programm-slug true-slug}))
 
       :else
-      (p/let [termine  (db/query (termine-for-programm-query locale id))
-              rendered (templates/head-and-foot-dynamic
-                        req {:titel       (:titel programm)
-                             :og-image    (when (:bild programm)
-                                            (d/image-by-preset "w1600" (:bild programm)))
-                             :breadcrumbs [(snip/programme locale) [:programme {}]
-                                           (:titel programm) (:url req)]}
-                        [:div.mainframe
-                         (format-full req programm termine)])]
+      (p/let [[kuenstler-rows termine]
+              (p/all
+               [(if-let [kid (:kuenstler programm)]
+                  (db/query (kuenstler-mini-query locale kid))
+                  [])
+                (db/query (termine-for-programm-query locale id))])
+              kuenstler (first kuenstler-rows)
+              programm  (assoc programm
+                               :kuenstler_id   (:id kuenstler)
+                               :kuenstler_slug (:slug kuenstler)
+                               :kuenstler_name (:name kuenstler))
+              rendered  (templates/head-and-foot-dynamic
+                         req {:titel       (:titel programm)
+                              :og-image    (when (:bild programm)
+                                             (d/image-by-preset "w1600" (:bild programm)))
+                              :breadcrumbs [(snip/programme locale) [:programme {}]
+                                            (:titel programm) (:url req)]}
+                         [:div.mainframe
+                          (format-full req programm termine)])]
         (ph/html->response rendered)))))
