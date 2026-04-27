@@ -9,6 +9,7 @@ const lightbox = new PhotoSwipeLightbox({
   children: 'a',
   pswpModule: () => import('photoswipe'),
   paddingFn: () => ({ top: 0, bottom: FOOTER_HEIGHT + 8, left: 0, right: 0 }),
+  showHideAnimationType: 'fade',
 });
 
 const esc = s => (s ?? '').replace(/[&<>"']/g, c =>
