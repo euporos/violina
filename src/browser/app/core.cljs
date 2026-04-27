@@ -2,6 +2,7 @@
   (:require
    [app.modal :as modal]
    [app.obfuscate :as obfuscate]
+   [app.presse :as presse]
    [psite-config.browser]
    [psite-transit.core :as transit]
    [psite-transit.cljs-time :as transit.time]))
@@ -17,6 +18,9 @@
   (psite-config.browser/load js/frontend_env_string)
   (obfuscate/email)
   (obfuscate/phone)
-  (modal/init))
+  (modal/init)
+  ;; Touch app.presse so shadow-cljs includes it in the bundle's require graph;
+  ;; the actual init is triggered via the script onload (see seiten/templates).
+  (set! js/window.-_app_presse_init presse/init))
 
 

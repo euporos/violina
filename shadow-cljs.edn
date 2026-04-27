@@ -20,7 +20,8 @@
                                        :entries [app.router
                                                  app.admin
                                                  app.modal
-                                                 app.obfuscate]}}
+                                                 app.obfuscate
+                                                 app.presse]}}
                     :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true}}}
                     :devtools   {:watch-dir "public/compiled/bundle"
                                  :watch-path "/compiled/bundle"}

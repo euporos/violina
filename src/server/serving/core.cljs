@@ -119,7 +119,8 @@
               (assoc-in [:session :store] (session.memory/memory-store setup.session/session-map))
               #_(assoc-in [:security :anti-forgery] false)))
     true (middleware/wrap-cache {:default "private, max-age=1800" ;; "private, max-age=2592000"
-                                "text/html" "private, no-cache"})
+                                "text/html" "private, no-cache"
+                                "application/transit" "no-store"})
     true (middleware/wrap-csp csp-directives)
     true wrap-config))
 
