@@ -4,13 +4,13 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-CONFIG_PATH="${CONFIG_PATH:-/home/phylax/projects/festival_pg/directus_config}"
+CONFIG_PATH="${CONFIG_PATH:-/home/phylax/projects/violina_macchiato/directus_config}"
 export CONFIG_PATH
 
 # Previous HEAD passed by deploy-prod for rollback support
 PREV_HEAD="${1:-}"
 
-echo "=== Festival Deploy ==="
+echo "=== violina-macchiato Deploy ==="
 echo "Project: $PROJECT_DIR"
 if [[ -n "$PREV_HEAD" ]]; then
     echo "Rollback target: ${PREV_HEAD:0:12}"
@@ -69,8 +69,8 @@ fi
 
 # Step 5: Stop services (brief downtime starts)
 echo "--- Stopping services ---"
-sudo systemctl stop festival.service
-sudo systemctl stop festival-directus.service
+sudo systemctl stop violina-macchiato.service
+sudo systemctl stop violina-macchiato-directus.service
 
 # Step 6: Apply Directus schema (idempotent, database is quiescent)
 echo "--- Schema apply ---"
@@ -78,8 +78,8 @@ echo "--- Schema apply ---"
 
 # Step 7: Start services (downtime ends)
 echo "--- Starting services ---"
-sudo systemctl start festival-directus.service
+sudo systemctl start violina-macchiato-directus.service
 sleep 3
-sudo systemctl start festival.service
+sudo systemctl start violina-macchiato.service
 
 echo "=== Deploy complete ==="

@@ -237,18 +237,18 @@ in
   };
 
   # Deploy to production from dev machine.
-  # Server checkout lives at festival_pg/ (the directory name was kept after the
-  # MariaDB→PG migration); systemd units are festival / festival-directus on :7002/:7003.
+  # Server checkout lives at violina_macchiato/app on netcup-vps-2;
+  # systemd units are violina-macchiato / violina-macchiato-directus on :7102/:7103.
   deploy-prod = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
-      name = "festival-deploy-prod";
+      name = "violina-macchiato-deploy-prod";
       text = ''
         SERVER="phylax@netcup-vps-2-arm"
         echo "=== Deploying to production ==="
         DEPLOYED_SHA=$(ssh "$SERVER" '
           set -euo pipefail
           cd /home/phylax/projects/libs && git pull >&2
-          cd /home/phylax/projects/festival_pg/app
+          cd /home/phylax/projects/violina_macchiato/app
           PREV_HEAD=$(git rev-parse HEAD)
           git fetch >&2 && git reset --hard origin/main >&2
           bash scripts/redeploy.sh "$PREV_HEAD" >&2

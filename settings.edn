@@ -1,6 +1,6 @@
 {:merge-config "../settings.edn"
  :directus-url    "/directus/"
- :canonical-domain "example.com"
+ :canonical-domain "new.violina-petrychenko.de"
  :site-name      "Macchiato Template"
  :google-site-verfication ""
  :print-sql false
