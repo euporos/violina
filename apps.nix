@@ -163,6 +163,17 @@ in
     bash scripts/pull_files.sh
   '';
 
+  # Push local Postgres directus DB to production (destructive: replaces prod DB).
+  # Wrapped in `nix develop` so PGHOST/PGPORT/... from pgEnvHook resolve locally.
+  # Requires NOPASSWD sudo on the server for `systemctl start/stop` of the
+  # violina-macchiato{,-directus}.service units — declared in the server flake
+  # at ../servers/vps2/netcup-vps-2/configuration.nix (security.sudo.extraConfig).
+  push-db-to-prod = flake-utils.lib.mkApp {
+    drv = pkgs.writeShellScriptBin "violina-macchiato-push-db-to-prod" ''
+      exec nix develop .#default --command bash scripts/push_db_to_prod.sh
+    '';
+  };
+
   # Generate Directus presentation-links from route metadata
   gen-directus-links = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
