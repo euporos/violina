@@ -201,9 +201,17 @@
 (defn fetch-dynamic-menus [req]
   (p/let [rows (menu-sonderseiten-query (:locale req))]
     (sonderseiten->dynamic-menus req rows)))
-(defn footer [{:keys [locale] :as req}]
+(defn- footer-basemenu [_req]
+  [{:type :insertpoint :id :footer}])
+
+(defn- render-footer-menuitem [{:keys [href name]}]
+  [:a.footer__menue-item {:href href} name])
+
+(defn footer [req dynamic-menus]
   [:div.footer
-   [:div.footer__menue]
+   (into [:div.footer__menue]
+         (map render-footer-menuitem
+              (pmenu/compose-menus (footer-basemenu req) (or dynamic-menus {}))))
    [:div.footer__copyright
     [:a.socialmedia__item
      {:href "https://www.facebook.com/Violina-Petrychenko-265583113951153"}
@@ -220,7 +228,7 @@
          (navbar req dynamic-menus)
          [:div#modal]
          [:div#mainframe comps]
-         (footer req)))
+         (footer req dynamic-menus)))
 
 (defn router-free
   [req head-data & comps]
