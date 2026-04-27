@@ -13,7 +13,8 @@
                        :directus-url
                        :mode
                        :noindex
-                       :show-errors?]
+                       :show-errors?
+                       :email-to-b64]
  :noindex true
  :show-errors? true ;false
  :mail-on-errors? false

@@ -153,7 +153,49 @@
     {:de "Zum Original"
      :en "to the original"
      :uk "до оригіналу"
-     :it "all'originale"}]])
+     :it "all'originale"}]
+
+   [jetzt-kaufen
+    {:de "Jetzt kaufen für"
+     :en "Buy now for"
+     :uk "Купити за"
+     :it "Compra ora per"}]
+
+   [versand
+    {:de "Versand"
+     :en "Shipping"
+     :uk "Доставка"
+     :it "Spedizione"}]
+
+   [widmung-bestellung
+    {:de "Optionale persönliche Widmung:"
+     :en "Optional personal dedication:"
+     :uk "Особисте присвячення (необов'язково):"
+     :it "Dedica personale facoltativa:"}]
+
+   [european-union
+    {:de "Europäische Union"
+     :en "European Union"
+     :uk "Європейський Союз"
+     :it "Unione Europea"}]
+
+   [weltweit
+    {:de "Weltweit"
+     :en "Worldwide"
+     :uk "По всьому світу"
+     :it "In tutto il mondo"}]
+
+   [ukraine
+    {:de "Ukraine"
+     :en "Ukraine"
+     :uk "Україна"
+     :it "Ucraina"}]
+
+   [quoteleft
+    {:de "„" :en "“" :uk "«" :it "«"}]
+
+   [quoteright
+    {:de "“" :en "”" :uk "»" :it "»"}]])
 
 (defsnips loc/fallback
   [[violina

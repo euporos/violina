@@ -1,5 +1,6 @@
 (ns app.core
   (:require
+   [app.cds :as cds]
    [app.modal :as modal]
    [app.obfuscate :as obfuscate]
    [app.presse :as presse]
@@ -21,6 +22,7 @@
   (modal/init)
   ;; Touch app.presse so shadow-cljs includes it in the bundle's require graph;
   ;; the actual init is triggered via the script onload (see seiten/templates).
-  (set! js/window.-_app_presse_init presse/init))
+  (set! js/window.-_app_presse_init presse/init)
+  (set! js/window.-_app_cds_init cds/init))
 
 

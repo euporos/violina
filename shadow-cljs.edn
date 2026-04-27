@@ -19,6 +19,7 @@
                                                   #_day8.re-frame-10x.preload]
                                        :entries [app.router
                                                  app.admin
+                                                 app.cds
                                                  app.modal
                                                  app.obfuscate
                                                  app.presse]}}
