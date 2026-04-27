@@ -49,10 +49,10 @@
                                  (println "\n" sql "\n" params))))]
      (pg/query @pool opts honeysql))))
 
-(def ^:private fallback-order [:de :en :uk])
+(def ^:private fallback-order [:de :en :uk :it])
 
 (defn localized
   "Selects a translated field with locale fallback via COALESCE.
-   (localized :concerts.title :uk) => [[:coalesce :title_uk :title_de :title_en] :title]"
+   (localized :concerts.title :uk) => [[:coalesce :title_uk :title_de :title_en :title_it] :title]"
   [field-kw locale]
   (dsr/localized field-kw locale fallback-order))

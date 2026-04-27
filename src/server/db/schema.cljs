@@ -2,6 +2,6 @@
   (:require-macros [directus-schema.core :refer [defschema]]))
 
 (defschema "schema/snapshot.json"
-  {:locales              ["de" "en" "uk"]
+  {:locales              ["de" "en" "uk" "it"]
    :translations-suffix  "_translations"
    :language-key         "languages_code"})
