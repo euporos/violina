@@ -4,10 +4,13 @@
    [cljstache.core :as tache]
    [clojure.string :as str]
    [comp.snippets :as snip]
+   [db.schema :as s]
+   [db.setup :as db]
 
    [garden.core :as garden]
    [goog.string :as gstring]
    [goog.string.format]
+   [kitchen-async.promise :as p]
    [psite-menu.core :as pmenu]
    [psite-routing.core :as routing]
    [psite-seo.core :as seo]
@@ -154,26 +157,50 @@
 
 (defn alternate-locales  [current-locale])
 
-(defn navbar [{:keys [locale] :as req}]
-  (let [link (fn [route-name label]
-               [:li.navigation__item
-                [:a {:href (routing/reverse-match req route-name {})} label]])]
-    [:ul.navigation
-     (link :home        (snip/home locale))
-     (link :termine     (snip/termine locale))
-     (link :kuenstler   (snip/kuenstler locale))
-     (link :programme   (snip/programme locale))
-     (link :cds         (snip/cds locale))
-     (link :galerie     (snip/galerie locale))
-     (link :presse      (snip/presse locale))
-     [:li.navigation__item
-      [:a {:href (str "/" (name locale) "/pg/1-paedagogik")}
-       (snip/paedagogik locale)]]
-     [:li.navigation__item
-      [:a {:href (str (routing/reverse-match req :home {}) "#contact")}
-       (snip/kontakt locale)]]
-     [:li.navigation__item.navigation__item--locale
-      (locale-switchers req)]]))
+(defn- basemenu [{:keys [locale] :as req}]
+  [{:type :menuitem :id :home      :href (routing/reverse-match req :home {})      :name (snip/home locale)}
+   {:type :menuitem :id :termine   :href (routing/reverse-match req :termine {})   :name (snip/termine locale)}
+   {:type :menuitem :id :kuenstler :href (routing/reverse-match req :kuenstler {}) :name (snip/kuenstler locale)}
+   {:type :menuitem :id :programme :href (routing/reverse-match req :programme {}) :name (snip/programme locale)}
+   {:type :menuitem :id :cds       :href (routing/reverse-match req :cds {})       :name (snip/cds locale)}
+   {:type :menuitem :id :galerie   :href (routing/reverse-match req :galerie {})   :name (snip/galerie locale)}
+   {:type :menuitem :id :presse    :href (routing/reverse-match req :presse {})    :name (snip/presse locale)}
+   {:type :insertpoint :id :main}])
+
+(defn- render-menuitem [{:keys [href name]}]
+  [:li.navigation__item [:a {:href href} name]])
+
+(defn navbar [req dynamic-menus]
+  [:ul.navigation
+   (for [item (pmenu/compose-menus (basemenu req) (or dynamic-menus {}))]
+     (render-menuitem item))
+   [:li.navigation__item.navigation__item--locale
+    (locale-switchers req)]])
+
+(defn sonderseite->menuitem [req {:keys [id slug titel menue]}]
+  {:type        :menuitem
+   :insertpoint (keyword menue)
+   :href        (routing/reverse-match req :single-page
+                                       {:page-id   (str id)
+                                        :page-slug slug})
+   :name        titel})
+
+(defn sonderseiten->dynamic-menus [req rows]
+  (->> rows
+       (map (partial sonderseite->menuitem req))
+       (group-by :insertpoint)))
+
+(defn menu-sonderseiten-query [locale]
+  (db/query {:select [s/sonderseiten-id
+                      s/sonderseiten-slug
+                      s/sonderseiten-menue
+                      (db/localized s/sonderseiten-titel locale)]
+             :from   [[s/sonderseiten_t s/sonderseiten]]
+             :where  [:not= s/sonderseiten-menue nil]}))
+
+(defn fetch-dynamic-menus [req]
+  (p/let [rows (menu-sonderseiten-query (:locale req))]
+    (sonderseiten->dynamic-menus req rows)))
 (defn footer [{:keys [locale] :as req}]
   [:div.footer
    [:div.footer__menue]
@@ -190,7 +217,7 @@
 (defn head-and-foot-blank
   [req head-data dynamic-menus & comps]
   (blank req head-data
-         (navbar req)
+         (navbar req dynamic-menus)
          [:div#modal]
          [:div#mainframe comps]
          (footer req)))
@@ -203,4 +230,5 @@
 
 (defn head-and-foot-dynamic
   [req head-data & comps]
-  (head-and-foot-blank req head-data {} comps))
+  (p/let [dyn (fetch-dynamic-menus req)]
+    (apply head-and-foot-blank req head-data dyn comps)))
