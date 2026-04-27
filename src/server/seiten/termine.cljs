@@ -109,6 +109,30 @@
 ;; #### Rendering ###
 ;; ##################
 
+(defn- google-calendar-link [{:keys [locale] :as req}
+                             {:keys [datzeit kuenstler-name strasse postleitzahl stadt
+                                     ort-name programmtitel id sonderprogramm]}]
+  (let [event (td/ptermin
+               datzeit 120
+               (str/join " " (remove str/blank?
+                                     [(snip/konzert locale) "–" kuenstler-name]))
+               {:location    (str/join ", " (remove str/blank?
+                                                    [ort-name strasse
+                                                     (str/join " " (remove str/blank?
+                                                                           [postleitzahl stadt]))]))
+                :description (str/join "\n"
+                                       (remove str/blank?
+                                               [(or programmtitel sonderprogramm)
+                                                (str (routing/make-path-absolute
+                                                      req (routing/reverse-match req :termine {}))
+                                                     "#termin-" id)]))})]
+    [:a.standardlink.termin__gcal-link
+     {:target "_blank"
+      :rel    "noopener noreferrer"
+      :title  "Google Calendar"
+      :href   (td/google-calendar event)}
+     "+Google Cal"]))
+
 (defn- ical-link [req termin-id]
   [:a.standardlink.termin__ical-link
    {:target "_blank"
@@ -174,7 +198,9 @@
      [:div.termin__detailzeile
       {:id detail-id}
       [:div.hauptzelle.hauptzelle--links
-       (when-not past? (ical-link req id))]
+       (when-not past?
+         (list (ical-link req id) [:br]
+               (google-calendar-link req t-row)))]
       [:div.detailzelle.hauptzelle--mitte
        (when strasse
          [:div.detailzelle__adresse
