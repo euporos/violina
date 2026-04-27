@@ -25,7 +25,7 @@
 
  ;; Required secrets — values come from ../settings.edn (parent, untracked).
  :admin-email     #psite/secret "admin-email"
- :admin-password  #psite/secret "admin-password"
+ ;; :admin-password  #psite/secret "admin-password"
  :email-transporter {:host   "mx2ff9.netcup.net"
                      :port   465
                      :secure true
