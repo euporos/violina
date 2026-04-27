@@ -84,19 +84,25 @@
     origin))
 
 (def posthog-origin
-  ;; Origin of the PostHog embed (e.g. https://eu.posthog.com), derived from
-  ;; :posthog :dashboard-embed-url so the shared-dashboard iframe passes frame-src.
+  ;; Origin of PostHog (e.g. https://eu.posthog.com), derived from :posthog :host
+  ;; (api_host of the embed bundle) with fallback to :dashboard-embed-url.
   (when-let [[_ origin] (re-find #"^(https?://[^/]+)"
-                                 (or (get-in env/env [:posthog :dashboard-embed-url]) ""))]
+                                 (or (get-in env/env [:posthog :host])
+                                     (get-in env/env [:posthog :dashboard-embed-url])
+                                     ""))]
     origin))
 
 (def csp-directives
   {:default-src     ["'self'"]
    :script-src      (cond-> ["'self'" "'unsafe-inline'"]
-                      (= :dev (env/setting :mode)) (conj "'unsafe-eval'"))
+                      (= :dev (env/setting :mode)) (conj "'unsafe-eval'")
+                      posthog-origin (conj posthog-origin))
    :style-src       ["'self'" "'unsafe-inline'"]
-   :img-src         (cond-> ["'self'" "data:"]
-                      directus-origin (conj directus-origin))
+   :img-src         (cond-> ["'self'" "data:" "https://sounds-of-ukraine.de"]
+                      directus-origin (conj directus-origin)
+                      posthog-origin (conj posthog-origin))
+   :connect-src     (cond-> ["'self'"]
+                      posthog-origin (conj posthog-origin))
    :frame-src       (cond-> ["https://www.youtube.com"]
                       posthog-origin (conj posthog-origin))
    :object-src      ["'none'"]
