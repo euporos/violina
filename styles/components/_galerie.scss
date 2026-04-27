@@ -11,3 +11,17 @@
     line-height: 1.3;
     box-sizing: border-box;
 }
+
+.galerie .galerie__vorschaubild {
+    display: block;
+    aspect-ratio: 1 / 1;
+    background: #cccccc;
+    overflow: hidden;
+
+    > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}

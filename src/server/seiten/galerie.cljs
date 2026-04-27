@@ -21,8 +21,9 @@
       :data-foto-label           foto-label
       :data-vollaufloesung-label vollaufloesung-label
       :target                    "_blank"}
-     [:img {:src     (d/image-by-preset "400crop" bild)
-            :width   "100%"
+     [:img {:src     (d/image-by-preset "w600" bild)
+            :width   width
+            :height  height
             :loading "lazy"
             :alt     (or beschreibung "")}]]))
 
