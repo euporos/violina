@@ -4,6 +4,7 @@
             [db.schema :as s]
             [db.setup :as db]
             [directus.core :as d]
+            [geo]
             [kitchen-async.promise :as p]
             [macchiato-async.core :refer-macros [defhandler]]
             [macchiato.util.response :as r]
@@ -99,7 +100,7 @@
                                :cljs  {:onload "app.cds.init"
                                        :js-data {:cds cds
                                                  :email-text email-template
-                                                 :sales-region :eu}}}
+                                                 :sales-region (geo/country->sales-region (:country-code req))}}}
                           [:div.mainframe
                            (map (partial listenansicht-item req) cds)])]
     (ph/html->response rendered)))
@@ -131,7 +132,7 @@
                                    :cljs         {:onload "app.cds.init"
                                                   :js-data {:cds [cd]
                                                             :email-text email-template
-                                                            :sales-region :eu}}}
+                                                            :sales-region (geo/country->sales-region (:country-code req))}}}
                               [:div.mainframe
                                (detail-sheet req cd)])]
         (ph/html->response rendered)))))

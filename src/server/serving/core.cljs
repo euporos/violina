@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [config.env :as env]
             [db.setup]
+            [geo]
             [macchiato.middleware.defaults :as defaults]
             [macchiato.middleware.session.memory :as session.memory]
             [macchiato.server :as http]
@@ -31,9 +32,16 @@
    rate-limit/config-schema))
 
 (def lib-config
-  (let [cfg {:psite-routing/devmode?        (boolean (env/setting :devmode?))
-             :psite-routing/locale-fallback (env/setting :locale-fallback)
+  (let [cfg {:psite-routing/devmode?         (boolean (env/setting :devmode?))
+             :psite-routing/locale-fallback  (env/setting :locale-fallback)
+             :psite-routing/country->locale  geo/country->locale
              :psite-middleware/show-errors?  (boolean (env/setting :show-errors?))
+             :psite-middleware/geolocation   (merge {:enabled?               false
+                                                     :provider-url           "https://ipapi.co/%s/json/"
+                                                     :api-key                nil
+                                                     :trust-x-forwarded-for? false
+                                                     :timeout-ms             3000}
+                                                    (env/setting :geolocation))
              :rate-limit/trust-proxy?       (boolean (env/setting :rate-limit-trust-proxy?))
              :rate-limit/buckets            (merge {:book {:capacity 3  :refill-per-sec 0.003333333}
                                                    :ical {:capacity 30 :refill-per-sec 0.5}
@@ -112,6 +120,7 @@
 
 (def macchiato-app
   (cond-> reitit-handler
+    true middleware/wrap-geolocation
     (not (env/setting :show-errors?)) wrap-in-generic-converter
     true (defaults/wrap-defaults
           (-> defaults/site-defaults
