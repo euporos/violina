@@ -3,7 +3,7 @@ import '../styles/main.scss';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
 const lightbox = new PhotoSwipeLightbox({
-  gallery: '#my-gallery',
+  gallery: '.pswp-gallery',
   children: 'a',
   pswpModule: () => import('photoswipe')
 });
