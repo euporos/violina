@@ -21,7 +21,8 @@
 ;; ##################
 
 (defn- archiv? [req]
-  (let [v (get-in req [:parameters :query :archive])]
+  (let [v (or (get-in req [:parameters :query :archive])
+              (get-in req [:query-params "archive"]))]
     (boolean (and v (not (#{"" "0" "false"} v))))))
 
 (defn- date->str [d]
