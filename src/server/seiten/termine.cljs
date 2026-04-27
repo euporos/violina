@@ -109,6 +109,29 @@
 ;; #### Rendering ###
 ;; ##################
 
+(defn- ical-link [req termin-id]
+  [:a.standardlink.termin__ical-link
+   {:target "_blank"
+    :rel    "noopener noreferrer"
+    :title  "iCal"
+    :href   (routing/reverse-match req :api-ical {} {:termin-id termin-id})}
+   [:img {:src    "/from_reservoir/ical.svg"
+          :height "32"
+          :alt    "iCal"}]])
+
+(defn- abonnement [req]
+  (let [locale  (:locale req)
+        ics-url (routing/make-path-absolute
+                 req (routing/reverse-match req :api-ical {}))
+        href    (str "https://calendar.google.com/calendar/u/0/r?cid=" ics-url)]
+    [:div.abonnement
+     [:div.abonnement__text
+      (snip/kein-konzert-mehr-verpassen locale) " "
+      [:a.standardlink {:href href :target "_blank" :rel "noopener noreferrer"}
+       (snip/subscribe-to-ical locale)]]
+     [:a.abonnement__icon {:href href :target "_blank" :rel "noopener noreferrer"}
+      [:img {:src "/from_reservoir/ical.svg" :height "40"}]]]))
+
 (defn- termin-row [{:keys [locale] :as req} t-row]
   (let [{:keys [id uhrzeit datzeit datum sonderkuenstler abgesagt
                 detail-id weekday datum-formatted kuenstler-name
@@ -150,7 +173,8 @@
                           kuenstler-name])]]
      [:div.termin__detailzeile
       {:id detail-id}
-      [:div.hauptzelle.hauptzelle--links]
+      [:div.hauptzelle.hauptzelle--links
+       (when-not past? (ical-link req id))]
       [:div.detailzelle.hauptzelle--mitte
        (when strasse
          [:div.detailzelle__adresse
@@ -198,7 +222,8 @@
          {:href (str (routing/reverse-match req :termine {}) "?archive=1")}
          [:div.termin__hauptzeile (snip/aeltere-termine (:locale req))]])
       (map (partial terminabschnitt req)
-           (partition-by :jahr termine))]
+           (partition-by :jahr termine))
+      (when-not archiv-flag? (abonnement req))]
      (when (and (not archiv-flag?) aktueller)
        [:script {:type "text/javascript"}
         (str "location.href = '#termin-" (:id aktueller) "'")]))))

@@ -1,9 +1,11 @@
 (ns api.routes
   {:clj-kondo/config {:linters {:unresolved-namespace {:level :off}}}}
   #?(:node (:require
+             [api.ical :as ical]
              [api.presse :as presse]
              [config.env :as env]
-             [psite-middleware.core :as middleware]))
+             [psite-middleware.core :as middleware]
+             [psite-rate-limit.core :as rate-limit]))
   #?(:clj  (:require      [psite-routing.macros :as prm])
      :cljs (:require-macros [psite-routing.macros :as prm])))
 
@@ -15,4 +17,9 @@
                          middleware/wrap-edn-params]}
     ["/presse/{artikel-id}" {:name       :api-presse-detail
                              :handler    presse/detail-handler
-                             :parameters {:path [[:artikel-id :int]]}}]]))
+                             :parameters {:path [[:artikel-id :int]]}}]
+    ["/ical" {:name       :api-ical
+              :handler    ical/handler
+              :middleware [(rate-limit/wrap-rate-limit :ical)]
+              :parameters {:query [[:kuenstler-id {:optional true} :int]
+                                   [:termin-id    {:optional true} :int]]}}]]))
