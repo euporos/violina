@@ -133,6 +133,21 @@
       :href   (td/google-calendar event)}
      "+Google Cal"]))
 
+(defn- google-maps-url [& parts]
+  (->> parts
+       (remove str/blank?)
+       (str/join " ")
+       js/encodeURIComponent
+       (str "https://www.google.com/maps/search/?api=1&query=")))
+
+(defn- google-maps-link [{:keys [strasse stadt postleitzahl]}]
+  [:a.detailzelle__mapslink
+   {:target "_blank"
+    :rel    "noopener noreferrer"
+    :title  "Google Maps"
+    :href   (google-maps-url strasse postleitzahl stadt)}
+   [:img.mapicon {:src "/from_reservoir/mapicon.svg" :height "32" :alt "Map"}]])
+
 (defn- ical-link [req termin-id]
   [:a.standardlink.termin__ical-link
    {:target "_blank"
@@ -205,7 +220,8 @@
        (when strasse
          [:div.detailzelle__adresse
           [:div.detailzelle__adressfeld
-           strasse [:br] postleitzahl " " stadt]])
+           strasse [:br] postleitzahl " " stadt]
+          (google-maps-link t-row)])
        (cond
          (not (str/blank? sonderprogramm))
          [:div sonderprogramm]
@@ -291,7 +307,9 @@
         [:div.termin-ez__datum datum-formatted " " jahr [:br]
          (when uhrzeit zeit)]
         [:div.termin-ez__adresse ort-name [:br] [:br]
-         strasse [:br] postleitzahl " " stadt]]
+         strasse [:br] postleitzahl " " stadt
+         (when strasse
+           (list " " (google-maps-link row)))]]
        (when bild
          [:div.termin-ez__columns__right
           [:img {:width "100%"
