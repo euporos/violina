@@ -5,17 +5,21 @@
             [comp.localization :as loc]
             [seiten.templates :as templates]
             [setup.mail :as mail]
-            [taoensso.timbre :refer-macros [errorf]])
-  (:require-macros
-   [hiccups.core :as hiccups :refer [html5]]))
+            [taoensso.timbre :refer-macros [errorf]]))
 
-(defn error-page [message status]
-  [:section.section
-   [:div.container.has-text-centered
-    [:h1.title.is-1.has-text-centered message " (" status ")"]
-    [:a
-     {:href "/"}
-     "Zurück zur Startseite"]]])
+(defn error-page [req message status]
+  [:div.mainframe
+   [:div.sheet
+    [:div.sheet__header (str status " – " message)]
+    [:div.sheet__body
+     [:div.sheet__fliesstext.has-text-centered
+      [:p
+       [:a {:href (str "/" (name (:locale req)) "/")}
+        (loc/by-locale (:locale req)
+                       {:de "Zurück zur Startseite"
+                        :en "Back to home"
+                        :it "Torna alla home"
+                        :uk "На головну"})]]]]]])
 
 (defn error-converter
   [router response]
@@ -44,15 +48,11 @@
                 (ph/pprint-to-string (update response :original-request
                                              #(dissoc % :reitit.core/match :config)))))
           (.catch (fn [e] (errorf "Error notification mail failed: %s" (.-message e))))))
-    (-> {:body   (if-not true #_(:reitit.core/router request)
-                         (templates/router-free request {:beschreibung ""
-                                                         :titel        (str status " – " message)}
-                                                (error-page message status))
-                         (templates/head-and-foot-blank
-                          request {:beschreibung ""
-                                   :titel        (str status " – " message)}
-                          []
-                          (error-page message status)))
+    (-> {:body   (templates/head-and-foot-blank
+                  request {:beschreibung ""
+                           :titel        (str status " – " message)}
+                  {}
+                  (error-page request message status))
          :status status}
         (r/content-type "text/html"))))
 
