@@ -3,10 +3,22 @@
    [psite-pg.core :as pg]
    [directus-schema.runtime :as dsr]
    [cljs-time.coerce :as t.coerce]
+   [cljs-time.core :as t]
    [config.env :as env]
    [db.schema :as s]
    [mount.core :refer [defstate]]
    [taoensso.timbre :refer [infof]]))
+
+(defn- pg-date->cljs-time
+  "node-postgres returns DATE columns as JS Date at LOCAL midnight; converting
+   that via from-date shifts the calendar day in non-UTC timezones (e.g. CET
+   `2026-01-01` becomes `2025-12-31T23:00Z`). Build a UTC DateTime from the
+   JS Date's *local* y/m/d components so the calendar day is preserved."
+  [js-date]
+  (when js-date
+    (t/date-time (.getFullYear js-date)
+                 (inc (.getMonth js-date))
+                 (.getDate js-date))))
 
 (declare pool)
 
@@ -18,7 +30,7 @@
                        :password (:password db-config)
                        :database (:db-name db-config)
                        ;; pg type OIDs: 1082=date, 1114=timestamp, 1184=timestamptz
-                       :type-parsers {1082 t.coerce/from-date
+                       :type-parsers {1082 pg-date->cljs-time
                                       1114 dsr/ts-no-tz->cljs-time
                                       1184 t.coerce/from-date}}
                pool (pg/create-pool config)]
