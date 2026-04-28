@@ -100,7 +100,10 @@
                  (seo/open-graph
                   {:title       title
                    :description beschreibung
-                   :image       og-image
+                   :image       (when og-image
+                                  (if (re-find #"^https?://" og-image)
+                                    og-image
+                                    (routing/make-path-absolute req og-image)))
                    :url         (routing/make-path-absolute req (:url req))
                    :type        "website"})
 
