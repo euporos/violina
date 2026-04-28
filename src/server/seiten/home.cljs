@@ -202,6 +202,28 @@
    (when title [:div.homesection__ueberschrift title])
    content])
 
+(def ^:private paedagogik-home-text
+  {:de {:title "Klavierunterricht in Köln"
+        :body  "Ich gebe Klavierunterricht in Köln für ambitionierte und fortgeschrittene Pianistinnen und Pianisten."
+        :link  "→ mehr erfahren"}
+   :en {:title "Piano lessons in Cologne"
+        :body  "I teach piano in Cologne for ambitious and advanced pianists."
+        :link  "→ learn more"}
+   :uk {:title "Уроки фортепіано в Кельні"
+        :body  "Я викладаю фортепіано в Кельні для амбітних піаністів і піаністок просунутого рівня."
+        :link  "→ дізнатися більше"}
+   :it {:title "Lezioni di pianoforte a Colonia"
+        :body  "Insegno pianoforte a Colonia a pianisti ambiziosi di livello avanzato."
+        :link  "→ per saperne di più"}})
+
+(defn- paedagogik-section [req]
+  (let [{:keys [title body link]} (get paedagogik-home-text (:locale req)
+                                       (:de paedagogik-home-text))]
+    (homesection title
+                 [:div.homesection__paedagogik
+                  [:p body]
+                  [:a {:href (routing/reverse-match req :paedagogik {})} link]])))
+
 ;; ##################
 ;; #### Handler #####
 ;; ##################
@@ -250,6 +272,7 @@
                         (homesection "Інтерв'ю про Мрії на Радіо Ісландія" (radio-islandia)))
                       (homesection (snip/home-presse locale)
                                    (presse-section req artikel))
+                      (paedagogik-section req)
                       (when (= :de locale)
                         (homesection nil (wdr)))]))]
     (ph/html->response rendered)))

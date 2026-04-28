@@ -184,13 +184,14 @@
 (defn alternate-locales  [current-locale])
 
 (defn- basemenu [{:keys [locale] :as req}]
-  [{:type :menuitem :id :home      :href (routing/reverse-match req :home {})      :name (snip/home locale)}
-   {:type :menuitem :id :termine   :href (routing/reverse-match req :termine {})   :name (snip/termine locale)}
-   {:type :menuitem :id :kuenstler :href (routing/reverse-match req :kuenstler {}) :name (snip/kuenstler locale)}
-   {:type :menuitem :id :programme :href (routing/reverse-match req :programme {}) :name (snip/programme locale)}
-   {:type :menuitem :id :cds       :href (routing/reverse-match req :cds {})       :name (snip/cds locale)}
-   {:type :menuitem :id :galerie   :href (routing/reverse-match req :galerie {})   :name (snip/galerie locale)}
-   {:type :menuitem :id :presse    :href (routing/reverse-match req :presse {})    :name (snip/presse locale)}
+  [{:type :menuitem :id :home       :href (routing/reverse-match req :home {})       :name (snip/home locale)}
+   {:type :menuitem :id :termine    :href (routing/reverse-match req :termine {})    :name (snip/termine locale)}
+   {:type :menuitem :id :kuenstler  :href (routing/reverse-match req :kuenstler {})  :name (snip/kuenstler locale)}
+   {:type :menuitem :id :programme  :href (routing/reverse-match req :programme {})  :name (snip/programme locale)}
+   {:type :menuitem :id :cds        :href (routing/reverse-match req :cds {})        :name (snip/cds locale)}
+   {:type :menuitem :id :galerie    :href (routing/reverse-match req :galerie {})    :name (snip/galerie locale)}
+   {:type :menuitem :id :presse     :href (routing/reverse-match req :presse {})     :name (snip/presse locale)}
+   {:type :menuitem :id :paedagogik :href (routing/reverse-match req :paedagogik {}) :name (snip/paedagogik locale)}
    {:type :insertpoint :id :main}])
 
 (defn- render-menuitem [{:keys [href name]}]
@@ -223,12 +224,18 @@
        (group-by :insertpoint)))
 
 (defn menu-sonderseiten-query [locale]
+  ;; id=1 is the legacy paedagogik page, now permanently redirected to the
+  ;; dedicated /klavierunterricht-koeln route (rendered via basemenu above).
+  ;; Excluding it here prevents a duplicate menu entry pointing at the
+  ;; redirect target.
   (db/query {:select [s/sonderseiten-id
                       s/sonderseiten-slug
                       s/sonderseiten-menue
                       (db/localized s/sonderseiten-titel locale)]
              :from   [[s/sonderseiten_t s/sonderseiten]]
-             :where  [:not= s/sonderseiten-menue nil]}))
+             :where  [:and
+                      [:not= s/sonderseiten-menue nil]
+                      [:not= s/sonderseiten-id 1]]}))
 
 (defn fetch-dynamic-menus [req]
   (p/let [rows (menu-sonderseiten-query (:locale req))]

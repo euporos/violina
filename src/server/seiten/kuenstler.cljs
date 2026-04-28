@@ -82,7 +82,25 @@
      (map (partial format-termin req) (take 3 termine)))
     "Derzeit keine Konzerte"))
 
-(defn- format-voll [req {:keys [bild bild_width bild_height name beschreibung ankuendigung]} termine]
+(def ^:private violina-kuenstler-id 1)
+
+(def ^:private paedagogik-link-text
+  {:de "Klavierunterricht in Köln – mehr erfahren"
+   :en "Piano lessons in Cologne – learn more"
+   :uk "Уроки фортепіано в Кельні – дізнатися більше"
+   :it "Lezioni di pianoforte a Colonia – per saperne di più"})
+
+(defn- paedagogik-teaser [req kuenstler-id]
+  (when (= kuenstler-id violina-kuenstler-id)
+    (let [locale (:locale req)]
+      [:p.kuenstler__paedagogik-teaser
+       [:a.standardlink
+        {:href (routing/reverse-match req :paedagogik {})}
+        "→ " (get paedagogik-link-text locale (:de paedagogik-link-text))]])))
+
+(defn- format-voll [req kuenstler-id
+                    {:keys [bild bild_width bild_height name beschreibung ankuendigung]}
+                    termine]
   [:div.sheet
    [:div.sheet__header name]
    [:div.sheet__body
@@ -93,7 +111,8 @@
                            "sheet__bild--h"))
              :src   (d/image-by-preset "w1200" bild)}])
     [:div.sheet__fliesstext
-     (ph/dangerous-html beschreibung)]
+     (ph/dangerous-html beschreibung)
+     (paedagogik-teaser req kuenstler-id)]
     [:div.programm__termine
      (format-termine req termine (str ankuendigung ":"))]]])
 
@@ -142,5 +161,5 @@
                              :breadcrumbs  [[(snip/kuenstler (:locale req)) [:kuenstler {}]]
                                             [(:name kuenstler) (:url req)]]}
                         [:div.mainframe
-                         (format-voll req kuenstler termine)])]
+                         (format-voll req kuenstler-id kuenstler termine)])]
         (ph/html->response rendered)))))
