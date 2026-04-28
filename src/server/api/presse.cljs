@@ -27,8 +27,11 @@
                                        (d/image-by-preset "w1600" (:bild row))))
                     (update :datum (fn [d]
                                      (when d
-                                       (apply str (loc/by-locale (:locale req)
-                                                                 (td/format-dates-wordy d 0 true)))))))}
+                                       (->> (td/format-dates-wordy d 0 true)
+                                            (loc/by-locale (:locale req))
+                                            (tree-seq coll? seq)
+                                            (filter string?)
+                                            (apply str))))))}
       {:status  404
        :headers {"Cache-Control" "no-store"}
        :body    {:error "not-found"}})))
