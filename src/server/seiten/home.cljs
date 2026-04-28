@@ -91,9 +91,9 @@
      (cmn/youtube-embed link nil 650 315)]))
 
 (defn- einzeltermin [{:keys [locale] :as req}
-                    {:keys [id datum uhrzeit sonderkuenstler abgesagt
-                            stadt instrumentbild]
-                     kuenstler_name :name}]
+                     {:keys [id datum uhrzeit sonderkuenstler abgesagt
+                             stadt instrumentbild]
+                      kuenstler_name :name}]
   (let [datzeit (when uhrzeit
                   (td/unify-date-and-time
                    (t.format/unparse (t.format/formatters :date) datum) uhrzeit))
@@ -155,10 +155,10 @@
    [:div {:style "margin-top: .5rem;"}
     (audio-player "af37187a-aa1f-4d6d-a6f4-31c863f67fd3.mp3")]])
 
-(defn- zdf []
-  [:a {:href "https://www.zdf.de/nachrichten/zdf-morgenmagazin/violina-petrychenko-ukrainische-suite-vesnyanka-100.html"
-       :target "blank"}
-   [:img {:width "100%" :style "max-width: 60rem; margin-top: 1rem;" :src "/imgs/moma.jpg"}]])
+#_(defn- zdf []
+    [:a {:href "https://www.zdf.de/nachrichten/zdf-morgenmagazin/violina-petrychenko-ukrainische-suite-vesnyanka-100.html"
+         :target "blank"}
+     [:img {:width "100%" :style "max-width: 60rem; margin-top: 1rem;" :src "/imgs/moma.jpg"}]])
 
 (def img-style
   "max-width: 40rem; margin-top: 1rem; width: 100%; height: 40rem; object-fit: cover; object-position: 25% 15%;")
@@ -250,7 +250,6 @@
                         (homesection "Інтерв'ю про Мрії на Радіо Ісландія" (radio-islandia)))
                       (homesection (snip/home-presse locale)
                                    (presse-section req artikel))
-                      (homesection (snip/zdf locale) (zdf))
                       (when (= :de locale)
                         (homesection nil (wdr)))]))]
     (ph/html->response rendered)))
