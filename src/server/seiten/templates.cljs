@@ -33,6 +33,17 @@
   {:de "de-DE"
    :en "en-US"})
 
+;; UAs that fetch a URL purely to render a link preview. They must NOT receive
+;; a noindex meta tag, otherwise validators (e.g. Facebook's debugger) report
+;; the page as un-scrapeable.
+(def link-preview-ua-re
+  #"(?i)facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Pinterest|Slackbot|WhatsApp|TelegramBot|Discordbot|SkypeUriPreview|Applebot|redditbot")
+
+(defn link-preview-ua? [req]
+  (some->> (get-in req [:headers "user-agent"])
+           (re-find link-preview-ua-re)
+           boolean))
+
 (def font-awesome
   (list [:script {:src "/compiled/fontawesome-free-6.4.0-web/js/brands.min.js"
                   :defer true}]
@@ -75,9 +86,10 @@
                  (seo/viewport)
 
                  (seo/robots
-                  (when (or (get-in req [:parameters :query :debug])
-                            noindex?
-                            (get-in req [:config :noindex]))
+                  (when (and (or (get-in req [:parameters :query :debug])
+                                 noindex?
+                                 (get-in req [:config :noindex]))
+                             (not (link-preview-ua? req)))
                     :noindex))
 
                  (seo/ld
