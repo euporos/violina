@@ -7,6 +7,7 @@
              [seiten.home :as home]
              [seiten.konzertliste :as konzertliste]
              [seiten.kuenstler :as kuenstler]
+             [seiten.paedagogik :as paedagogik]
              [seiten.page :as page]
              #_[seiten.permanent :as permanent]
              [seiten.presse :as presse]
@@ -77,6 +78,9 @@
                        :directus   {:collection "presse"
                                     :params     {:artikel-id "id"}}
                        :parameters {:path [[:artikel-id :int]]}}]]
+
+    ["/klavierunterricht-koeln" {:name    :paedagogik
+                                 :handler paedagogik/handler}]
 
     ["/pg"
      ["/{page-id}-{page-slug}" {:handler    page/handler
