@@ -53,7 +53,8 @@
                       :from     [[s/kuenstler_t s/kuenstler]]
                       :order-by [s/kuenstler-id]})
           rendered  (templates/head-and-foot-dynamic
-                     req {:titel (snip/kuenstler locale)}
+                     req {:titel        (snip/kuenstler locale)
+                          :beschreibung (snip/meta-kuenstler locale)}
                      [:div.mainframe
                       (map (partial uebersicht-item req) kuenstler)])]
     (ph/html->response rendered)))

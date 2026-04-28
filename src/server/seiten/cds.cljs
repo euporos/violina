@@ -96,7 +96,8 @@
           cds            (mapv parse-edn-field rows)
           email-template (query-email-template locale)
           rendered       (templates/head-and-foot-dynamic
-                          req {:titel (snip/cds locale)
+                          req {:titel        (snip/cds locale)
+                               :beschreibung (snip/meta-cds locale)
                                :cljs  {:onload "app.cds.init"
                                        :js-data {:cds cds
                                                  :email-text email-template

@@ -51,7 +51,8 @@
   (p/let [locale    (:locale req)
           programme (db/query (uebersichts-query locale))
           rendered  (templates/head-and-foot-dynamic
-                     req {:titel (snip/programme locale)}
+                     req {:titel        (snip/programme locale)
+                          :beschreibung (snip/meta-programme locale)}
                      [:div.mainframe
                       [:div.progprevs
                        (map (partial format-preview req) programme)]])]

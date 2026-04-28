@@ -270,3 +270,29 @@
      :en "feel free to contact me"
      :uk "зверніться будь ласка до мене"
      :it "contattami"}]])
+
+(defsnips loc/fallback
+  [[meta-termine
+    {:de "Konzertkalender der Pianistin Violina Petrychenko – kommende Auftritte mit Terminen, Spielorten und Programmen."
+     :en "Concert calendar of pianist Violina Petrychenko – upcoming performances with dates, venues and programmes."
+     :uk "Календар концертів піаністки Віоліни Петриченко – майбутні виступи з датами, місцями та програмами."}]
+   [meta-programme
+    {:de "Konzertprogramme der Pianistin Violina Petrychenko – Werke, Komponisten und thematische Schwerpunkte ihrer Auftritte."
+     :en "Concert programmes of pianist Violina Petrychenko – repertoire, composers and thematic highlights of her performances."
+     :uk "Концертні програми піаністки Віоліни Петриченко – твори, композитори та тематичні акценти її виступів."}]
+   [meta-kuenstler
+    {:de "Musikerinnen und Musiker, mit denen Violina Petrychenko in Kammermusik- und Ensembleprojekten zusammenarbeitet."
+     :en "Musicians who collaborate with Violina Petrychenko in chamber music and ensemble projects."
+     :uk "Музиканти, які співпрацюють з Віоліною Петриченко у камерних та ансамблевих проєктах."}]
+   [meta-cds
+    {:de "CDs und Tonaufnahmen der Pianistin Violina Petrychenko – Diskografie mit Hörproben und Bestellmöglichkeit."
+     :en "CDs and recordings by pianist Violina Petrychenko – discography with listening samples and ordering."
+     :uk "Компакт-диски та записи піаністки Віоліни Петриченко – дискографія з прикладами та можливістю замовлення."}]
+   [meta-galerie
+    {:de "Bildergalerie der Pianistin Violina Petrychenko – Fotos von Konzerten, Porträts und Pressebildern."
+     :en "Photo gallery of pianist Violina Petrychenko – images from concerts, portraits and press photos."
+     :uk "Фотогалерея піаністки Віоліни Петриченко – знімки з концертів, портрети та пресфото."}]
+   [meta-presse
+    {:de "Pressestimmen und Rezensionen über die Pianistin Violina Petrychenko aus internationalen Medien."
+     :en "Press reviews and articles about pianist Violina Petrychenko from international media."
+     :uk "Преса та рецензії про піаністку Віоліну Петриченко в міжнародних медіа."}]])

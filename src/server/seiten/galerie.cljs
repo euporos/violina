@@ -60,7 +60,8 @@
                         (map (fn [[[_ name] imgs]]
                                {:name name :images imgs})))
           rendered (templates/head-and-foot-dynamic
-                    req {:titel (snip/galerie locale)}
+                    req {:titel        (snip/galerie locale)
+                         :beschreibung (snip/meta-galerie locale)}
                     [:div.mainframe
                      (map (partial kuenstler-section labels) sections)])]
     (ph/html->response rendered)))

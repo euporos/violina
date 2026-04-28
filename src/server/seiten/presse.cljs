@@ -74,7 +74,8 @@
                      :where    [:not= s/presse-ueberschrift nil]})
           articles (sort-articles locale fallback rows)
           rendered (templates/head-and-foot-dynamic
-                    req {:titel (snip/presse locale)
+                    req {:titel        (snip/presse locale)
+                         :beschreibung (snip/meta-presse locale)
                          :cljs  {:onload "app.presse.init"}}
                     [:div.mainframe
                      (zeitung locale articles)

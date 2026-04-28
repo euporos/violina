@@ -280,7 +280,8 @@
           starting-year (if archiv-flag? 2019 (td/currentyear))
           rows          (db/query (termine-list-query locale starting-year))
           rendered      (templates/head-and-foot-dynamic
-                         req {:titel (snip/termine locale)}
+                         req {:titel        (snip/termine locale)
+                              :beschreibung (snip/meta-termine locale)}
                          (cmn/mainpanel
                           (liste-full req
                                       (map (partial massage-termin locale) rows)
