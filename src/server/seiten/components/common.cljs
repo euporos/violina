@@ -1,5 +1,6 @@
 (ns seiten.components.common
-  (:require [cljs-time.core :as t]
+  (:require ["he" :as he]
+            [cljs-time.core :as t]
             [cljs-time.format :as t.format]
             [clojure.string :as str]
             [comp.localization :as loc]
@@ -16,12 +17,7 @@
    (when instring
      (let [plain     (-> instring
                          (str/replace #"<[^>]*>" " ")
-                         (str/replace "&nbsp;" " ")
-                         (str/replace "&amp;" "&")
-                         (str/replace "&quot;" "\"")
-                         (str/replace "&#39;" "'")
-                         (str/replace "&lt;" "<")
-                         (str/replace "&gt;" ">")
+                         he/decode
                          (str/replace #"\s+" " ")
                          str/trim)
            words     (str/split plain #" +")
