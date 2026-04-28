@@ -166,7 +166,7 @@
               rendered  (templates/head-and-foot-dynamic
                          req {:titel       (:titel programm)
                               :og-image    (when (:bild programm)
-                                             (d/image-by-preset "w1600" (:bild programm)))
+                                             (d/image-by-preset "og-image" (:bild programm)))
                               :breadcrumbs [[(snip/programme locale) [:programme {}]]
                                             [(:titel programm) (:url req)]]}
                          [:div.mainframe

@@ -347,8 +347,11 @@
           rows      (db/query (single-termin-query locale termin-id))
           row       (first rows)
           massaged  (when row (massage-termin locale row))
+          bild      (when row (or (:programm_bild row) (:kuenstler_bild row)))
           rendered  (templates/head-and-foot-dynamic
                      req {:titel       (snip/termine locale)
+                          :og-image    (when bild
+                                         (d/image-by-preset "og-image" bild))
                           :breadcrumbs [[(snip/termine locale) [:termine {}]]
                                         [(str termin-id) (:url req)]]}
                      [:div.mainframe (when massaged (format-einzel req massaged))])]
