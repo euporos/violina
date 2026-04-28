@@ -11,7 +11,8 @@
    [reitit.ring :as ring]
    [reitit.ring.coercion :as rrc]
    [seiten.home :as home]
-   [seiten.routes :as seiten]))
+   [seiten.routes :as seiten]
+   [seiten.sitemap :as sitemap]))
 
 (def language-keys-spec
   (into [:enum]
@@ -22,6 +23,9 @@
          :parameters {:query [:map
                               [:debug {:optional true} :boolean]]}}
     ["" home/blankhome]
+
+    ["sitemap.xml" {:name    :sitemap
+                    :handler sitemap/handler}]
 
     [":locale" {:middleware []
                 :parameters {:path [:map
