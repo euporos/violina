@@ -88,9 +88,6 @@
 
                  [:script {:src (m/cache-bust "/js/pedestrian.js")}]
 
-                 (when (:noindex (get-in req [:config :noindex]))
-                   (seo/http-equiv "Cache-Control" "no-store"))
-
                  (seo/google-site-verification
                   (get-in req [:config :google-site-verfication])) ;TODO: make setting
 
