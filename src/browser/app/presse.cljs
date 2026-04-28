@@ -51,13 +51,16 @@
         :rel    "noopener noreferrer"}
        "Zum Original"]])])
 
-(defn- vollansicht-nurbild [{:keys [medium bild-url link]}]
+(defn- vollansicht-nurbild [{:keys [medium bild-url bild-width bild-height link]}]
   [:<>
    [:div.popup__header
     [:div.popup__autor medium]]
    [:div.popup__scan
     (when bild-url
-      [:img {:src bild-url :alt medium}])]
+      [:img {:src    bild-url
+             :width  bild-width
+             :height bild-height
+             :alt    medium}])]
    (when link
      [:div.popup__footer
       [:a.popup__originallink

@@ -35,7 +35,7 @@
         rows))
 
 (defn- artikelvorschau [{:keys [id medium autor ueberschrift vorschautext volltext
-                                bild nurbild sprache]}]
+                                bild bild-width bild-height nurbild sprache]}]
   [:div.zeitung__artikel
    {:id              (str "artikel-" id)
     :data-artikel-id id
@@ -45,7 +45,12 @@
    (when-not nurbild
      [:div.zeitung__artikelueberschrift ueberschrift])
    (when bild
-     [:img.zeitung__vorschaubild {:src (d/image-by-preset "w600" bild)}])
+     [:img.zeitung__vorschaubild
+      {:src     (d/image-by-preset "w600" bild)
+       :width   bild-width
+       :height  bild-height
+       :loading "lazy"
+       :alt     (or medium "")}])
    [:div.zeitung__artikelvorschau {:lang sprache}
     (cond
       (seq vorschautext) (ph/dangerous-html vorschautext)
@@ -66,12 +71,15 @@
   (p/let [locale   (:locale req)
           fallback (env/setting :locale-fallback)
           rows     (db/query
-                    {:select   [s/presse-id s/presse-medium s/presse-autor
-                                s/presse-ueberschrift s/presse-vorschautext
-                                s/presse-volltext s/presse-bild s/presse-nurbild
-                                s/presse-sprache s/presse-datum]
-                     :from     [:presse]
-                     :where    [:not= s/presse-ueberschrift nil]})
+                    {:select    [s/presse-id s/presse-medium s/presse-autor
+                                 s/presse-ueberschrift s/presse-vorschautext
+                                 s/presse-volltext s/presse-bild s/presse-nurbild
+                                 s/presse-sprache s/presse-datum
+                                 [:directus_files.width  :bild-width]
+                                 [:directus_files.height :bild-height]]
+                     :from      [:presse]
+                     :left-join [:directus_files [:= :directus_files.id s/presse-bild]]
+                     :where     [:not= s/presse-ueberschrift nil]})
           articles (sort-articles locale fallback rows)
           rendered (templates/head-and-foot-dynamic
                     req {:titel        (snip/presse locale)

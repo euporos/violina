@@ -11,13 +11,16 @@
 (defhandler detail-handler [req]
   (p/let [id   (routing/path-param req :artikel-id)
           rows (db/query
-                {:select [s/presse-id s/presse-medium s/presse-autor
-                          s/presse-datum s/presse-ueberschrift
-                          s/presse-volltext s/presse-link s/presse-bild
-                          s/presse-nurbild s/presse-sprache]
-                 :from   [:presse]
-                 :where  [:= s/presse-id id]
-                 :limit  1})
+                {:select    [s/presse-id s/presse-medium s/presse-autor
+                             s/presse-datum s/presse-ueberschrift
+                             s/presse-volltext s/presse-link s/presse-bild
+                             s/presse-nurbild s/presse-sprache
+                             [:directus_files.width  :bild-width]
+                             [:directus_files.height :bild-height]]
+                 :from      [:presse]
+                 :left-join [:directus_files [:= :directus_files.id s/presse-bild]]
+                 :where     [:= s/presse-id id]
+                 :limit     1})
           row  (first rows)]
     (if row
       {:status  200
