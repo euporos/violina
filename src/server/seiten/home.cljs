@@ -231,7 +231,6 @@
           rendered (templates/head-and-foot-dynamic
                     req {:og-image     (str (or (get-in req [:config :site-url]) "")
                                             "/imgs/og_home.jpg")
-                         :breadcrumbs  [(snip/home locale) (:url req)]
                          :beschreibung (:meta_description begruessung)}
                     (cmn/mainpanel
                      [:div.homesections

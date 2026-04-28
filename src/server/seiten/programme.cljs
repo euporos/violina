@@ -167,8 +167,8 @@
                          req {:titel       (:titel programm)
                               :og-image    (when (:bild programm)
                                              (d/image-by-preset "w1600" (:bild programm)))
-                              :breadcrumbs [(snip/programme locale) [:programme {}]
-                                            (:titel programm) (:url req)]}
+                              :breadcrumbs [[(snip/programme locale) [:programme {}]]
+                                            [(:titel programm) (:url req)]]}
                          [:div.mainframe
                           (format-full req programm termine)])]
         (ph/html->response rendered)))))

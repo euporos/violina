@@ -41,6 +41,21 @@
         [:script {:src "/compiled/fontawesome-free-6.4.0-web/js/fontawesome.min.js"
                   :defer true}]))
 
+(defn- breadcrumb-url [req path]
+  (cond
+    (string? path) (routing/make-path-absolute req path)
+    (vector? path) (routing/reverse-match req (first path) (second path) {} {:absolute? true})))
+
+(defn- breadcrumb-entries
+  "Convert [[name path] …] pairs into the {:name :url} maps that
+  psite-seo/breadcrumb-list expects. Path is either a string URL or a
+  [route-name params] vector. Always prepends the localized Home crumb."
+  [req pairs]
+  (let [locale (keyword (-> req :path-params :locale))
+        home   [(snip/home locale) [:home {}]]]
+    (mapv (fn [[name path]] {:name name :url (breadcrumb-url req path)})
+          (cons home pairs))))
+
 (defn blank_hiccup
   "Empty page… "
   [req head-data & comps]
@@ -65,9 +80,12 @@
                             (get-in req [:config :noindex]))
                     :noindex))
 
-                 #_(seo/ld
-                    (seo/breadcrumb-list
-                     (or breadcrumbs [{:name titel :url (:url req)}])))
+                 (seo/ld
+                  (seo/breadcrumb-list
+                   (breadcrumb-entries
+                    req
+                    (or breadcrumbs
+                        (when titel [[titel (:url req)]])))))
 
                  [:script {:src (m/cache-bust "/js/pedestrian.js")}]
 

@@ -349,7 +349,7 @@
           massaged  (when row (massage-termin locale row))
           rendered  (templates/head-and-foot-dynamic
                      req {:titel       (snip/termine locale)
-                          :breadcrumbs [(snip/termine locale) [:termine {}]
-                                        (str termin-id) (:url req)]}
+                          :breadcrumbs [[(snip/termine locale) [:termine {}]]
+                                        [(str termin-id) (:url req)]]}
                      [:div.mainframe (when massaged (format-einzel req massaged))])]
     (ph/html->response rendered)))

@@ -138,7 +138,9 @@
                              :og-image     (d/image-by-preset "og-image"
                                                               (or (:og_image kuenstler)
                                                                   (:bild kuenstler)))
-                             :beschreibung (:meta_description kuenstler)}
+                             :beschreibung (:meta_description kuenstler)
+                             :breadcrumbs  [[(snip/kuenstler (:locale req)) [:kuenstler {}]]
+                                            [(:name kuenstler) (:url req)]]}
                         [:div.mainframe
                          (format-voll req kuenstler termine)])]
         (ph/html->response rendered)))))

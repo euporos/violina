@@ -130,6 +130,8 @@
                               req {:titel        (:titel cd)
                                    :beschreibung (:meta_description cd)
                                    :og-image     (d/image-by-preset "og-image" (:recto cd))
+                                   :breadcrumbs  [[(snip/cds locale) [:cds {}]]
+                                                  [(:titel cd) (:url req)]]
                                    :cljs         {:onload "app.cds.init"
                                                   :js-data {:cds [cd]
                                                             :email-text email-template
