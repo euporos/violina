@@ -34,7 +34,7 @@
   (let [tempfile "dump_to_test.sql"
         ds (jdbc/get-datasource db-config)]
     (println "Filling test DB")
-    (sh-throw-on-error "bash" "-c" (format "mysqldump --protocol=tcp -h 127.0.0.1 -u %s festival_directus > %s" (:user meta-db-config) tempfile))
+    (sh-throw-on-error "bash" "-c" (format "mysqldump --protocol=tcp -h 127.0.0.1 -u %s violina_directus > %s" (:user meta-db-config) tempfile))
     (sh-throw-on-error "bash" "-c" (format "mysql --protocol=tcp -h 127.0.0.1 -u %s %s < %s" (:user meta-db-config) db-name tempfile))
     (sh-throw-on-error "rm" tempfile)
     (execute! ds (format "DELETE FROM reservations"))))

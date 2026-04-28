@@ -1,7 +1,7 @@
 {:merge-config "../settings.edn"
  :directus-url    "/directus/"
  :canonical-domain "new.violina-petrychenko.de"
- :site-name      "Macchiato Template"
+ :site-name      "Violina Petrychenko – Pianistin"
  :google-site-verfication ""
  :print-sql false
  :host "0.0.0.0"

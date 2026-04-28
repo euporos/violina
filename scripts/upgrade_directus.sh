@@ -7,7 +7,7 @@ export CONFIG_PATH
 
 echo "=== Directus v11 Upgrade ==="
 echo "--- Backup database ---"
-mysqldump -h 127.0.0.1 -u festival -p festival_directus > pre_upgrade_backup_$(date +%Y%m%d).sql
+mysqldump -h 127.0.0.1 -u violina -p violina_directus > pre_upgrade_backup_$(date +%Y%m%d).sql
 
 echo "--- Install Directus v11 ---"
 (cd directus && npm install)

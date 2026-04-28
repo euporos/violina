@@ -2,7 +2,7 @@ import ModuleComponent from './module.vue';
 
 export default {
 	id: 'admin-app',
-	name: 'Festival Admin',
+	name: 'Violina Admin',
 	icon: 'launch',
 	routes: [
 		{

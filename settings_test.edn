@@ -22,4 +22,4 @@
  :email-transporter {:host   "mx2ff9.netcup.net"
                      :port   465
                      :secure true
-                     :auth   {:user "info@sounds-of-ukraine.de"}}}
+                     :auth   {:user "piano@violina-petrychenko.de"}}}

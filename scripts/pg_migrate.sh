@@ -48,7 +48,7 @@ export DB_PASSWORD=password
 (cd directus && npx directus schema apply --yes ../schema/snapshot.json)
 
 # 4. Pump data MySQL → PG
-pgloader pg_migration/festival.load
+pgloader pg_migration/violina.load
 
 # 4a. Drop carried-over sessions — stale rows from the MariaDB dump cause a
 #     "Admin User is currently authenticated → Continue" redirect loop in the

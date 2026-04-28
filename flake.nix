@@ -1,5 +1,5 @@
 {
-  description = "Sounds of Ukraine - Festival Macchiato";
+  description = "Violina Petrychenko – Pianistin";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Macchiato Template — a starting point for new web applications on the Macchiato stack. Full-stack ClojureScript on Node.js via the Macchiato framework, with a Directus headless CMS for content. Forked from `violina-macchiato` (the Sounds of Ukraine festival site) and stripped of all domain content. Use as a base for new projects.
+Website for the pianist Violina Petrychenko. Full-stack ClojureScript on Node.js via the [Macchiato](https://macchiato-framework.github.io/) framework, with a Directus headless CMS for content.
 
 ## First-time dev setup
 

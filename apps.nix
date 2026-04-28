@@ -11,13 +11,13 @@ in
 {
   # Launch all dev processes via process-compose
   dev = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "festival-dev" ''
+    drv = pkgs.writeShellScriptBin "violina-dev" ''
       exec nix develop .#default --command ${pkgs.process-compose}/bin/process-compose up -f process-compose.yaml
     '';
   };
 
   # Build all Directus extensions
-  build-directus-extensions = mkApp "festival-build-directus-extensions" ''
+  build-directus-extensions = mkApp "violina-build-directus-extensions" ''
     for ext in directus/extensions/directus-extension-*/; do
       if [ -f "$ext/package.json" ]; then
         echo "Building extension: $ext"
@@ -27,7 +27,7 @@ in
   '';
 
   # Initial project setup
-  setup = mkApp "festival-setup" ''
+  setup = mkApp "violina-setup" ''
     npm install
     (cd directus && npm install)
     nix run .#build-directus-extensions
@@ -35,13 +35,13 @@ in
   '';
 
   # Process and resize reservoir images
-  process-reservoir = mkApp "festival-process-reservoir" ''
+  process-reservoir = mkApp "violina-process-reservoir" ''
     clj -X:process-reservoir
     bash scripts/resize_images.sh reservoir/imgs/*.JPG
   '';
 
   # Full production build
-  build = mkApp "festival-build" ''
+  build = mkApp "violina-build" ''
     export NODE_ENV=production
     rm -rf .shadow-cljs
     rm -rf public/compiled/*
@@ -53,7 +53,7 @@ in
   '';
 
   # Create deployable export directory
-  export = mkApp "festival-export" ''
+  export = mkApp "violina-export" ''
     export NODE_ENV=production
     rm -rf export
     mkdir export
@@ -76,7 +76,7 @@ in
   '';
 
   # Export with staging configuration
-  export-stage = mkApp "festival-export-stage" ''
+  export-stage = mkApp "violina-export-stage" ''
     export MCT_CONFIG_DIRS="../config/prod ../config/stage"
     export NODE_ENV=production
     rm -rf export
@@ -100,20 +100,20 @@ in
   '';
 
   # Zip the export directory for upload
-  zip = mkApp "festival-zip" ''
+  zip = mkApp "violina-zip" ''
     cd export
     zip -r ../upload.zip ./*
   '';
 
   # Run tests (expects MariaDB already running, e.g. via `nix run .#dev`)
-  test = mkApp "festival-test" ''
+  test = mkApp "violina-test" ''
     export CHROME_BINARY_PATH=${pkgs.chromium}/bin/chromium
     npx shadow-cljs release server browser
     clj -M:test -m cognitect.test-runner
   '';
 
   # Initialize local dev database and directus user
-  init-db = mkApp "festival-init-db" ''
+  init-db = mkApp "violina-init-db" ''
     export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
     bash scripts/init_db.sh
   '';
@@ -123,7 +123,7 @@ in
   # pgEnvHook in flake.nix are in scope — this keeps PGPORT as the single
   # source of truth for the port across dev-infra.
   init-pg-db = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "festival-init-pg-db" ''
+    drv = pkgs.writeShellScriptBin "violina-init-pg-db" ''
       exec nix develop .#default --command bash scripts/init_pg_db.sh
     '';
   };
@@ -131,7 +131,7 @@ in
   # Rebuild local Postgres Directus DB from the MariaDB prod clone via pgloader.
   # Wrapped in `nix develop` so PGHOST/PGPORT/... from pgEnvHook are in scope.
   pg-migrate = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "festival-pg-migrate" ''
+    drv = pkgs.writeShellScriptBin "violina-pg-migrate" ''
       exec nix develop .#default --command bash scripts/pg_migrate.sh
     '';
   };
@@ -139,7 +139,7 @@ in
   # One-time: walk the legacy v9 MariaDB dump (violina-petrychenko.de) through
   # Directus v9 → v10 → v11 schema migrations, then pgloader-pump into local PG.
   bootstrap-legacy = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "festival-bootstrap-legacy" ''
+    drv = pkgs.writeShellScriptBin "violina-bootstrap-legacy" ''
       exec nix develop .#default --command bash scripts/bootstrap_legacy_db.sh "$@"
     '';
   };
@@ -147,19 +147,19 @@ in
   # Repeatable: refresh content rows + uploads from prod into local PG.
   # Assumes bootstrap-legacy has already populated the schema.
   refresh-legacy = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "festival-refresh-legacy" ''
+    drv = pkgs.writeShellScriptBin "violina-refresh-legacy" ''
       exec nix develop .#default --command bash scripts/refresh_legacy_content.sh "$@"
     '';
   };
 
   # Clone production database to local dev
-  clone-prod-db = mkApp "festival-clone-prod-db" ''
+  clone-prod-db = mkApp "violina-clone-prod-db" ''
     export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
     bash scripts/clone_production_db.sh
   '';
 
   # Pull uploaded files from production
-  pull-files = mkApp "festival-pull-files" ''
+  pull-files = mkApp "violina-pull-files" ''
     bash scripts/pull_files.sh
   '';
 
@@ -177,7 +177,7 @@ in
   # Generate Directus presentation-links from route metadata
   gen-directus-links = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
-      name = "festival-gen-directus-links";
+      name = "violina-gen-directus-links";
       text = ''
         clj -X:gen-directus-links
         jq . schema/snapshot.json > schema/snapshot.json.tmp && mv schema/snapshot.json.tmp schema/snapshot.json
@@ -189,7 +189,7 @@ in
   # Export Directus schema snapshot (requires running MariaDB + Directus)
   schema-export = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
-      name = "festival-schema-export";
+      name = "violina-schema-export";
       text = ''
         mkdir -p schema
         cd directus && npx directus schema snapshot --format json ../schema/snapshot.json
@@ -204,14 +204,14 @@ in
   };
 
   # Apply schema snapshot to current Directus instance
-  schema-apply = mkApp "festival-schema-apply" ''
+  schema-apply = mkApp "violina-schema-apply" ''
     cd directus && npx directus schema apply --yes ../schema/snapshot.json
   '';
 
   # Upgrade psite libs to latest main and prefetch deps
   upgrade-psite = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
-      name = "festival-upgrade-psite";
+      name = "violina-upgrade-psite";
       runtimeInputs = commonPackages ++ [ pkgs.git ];
       text = ''
         PSITE_DIR="$(cd ../../psite && pwd)"

@@ -16,7 +16,7 @@ Copy these into the target project and adapt the names/paths:
 
 | Path | What it is | What to change |
 | --- | --- | --- |
-| `pg_migration/festival.load` | pgloader config (data-only, schema rename) | Rename file; update source DB name, target DB name, the `ALTER SCHEMA ... RENAME` |
+| `pg_migration/violina.load` | pgloader config (data-only, schema rename) | Rename file; update source DB name, target DB name, the `ALTER SCHEMA ... RENAME` |
 | `scripts/init_pg_db.sh` | Idempotent PG role + database bootstrap | Role name, DB name, password source |
 | `scripts/pg_migrate.sh` | Full local cutover pipeline: clone prod MariaDB → `directus bootstrap` → `schema apply` → `pgloader` → `TRUNCATE directus_sessions` → restart Directus | Directus paths; the `TRUNCATE directus_sessions` step stays (carried-over sessions cause an admin-UI login loop) |
 | `scripts/pg_redeploy.sh` | Server-side redeploy with rollback safety (keep `PREV_HEAD`, `git reset --hard` on failure, stop/start systemd units) | Systemd unit names, `CONFIG_PATH`, service start order |
@@ -26,7 +26,7 @@ Copy these into the target project and adapt the names/paths:
 
 ### Checklist for the next MySQL → PG migration
 
-1. Copy the table above's files into the target repo; rename `festival.load` and
+1. Copy the table above's files into the target repo; rename `violina.load` and
    adjust source/target DB names + schema rename.
 2. Adjust `scripts/init_pg_db.sh` (role, DB name, password source) and the four
    `apps.nix` pg-* entries (server hostname, remote path, branch).
@@ -64,7 +64,7 @@ Copy these into the target project and adapt the names/paths:
 
 Uncommitted / untracked items that are specific to this repo's migration event:
 
-- `festival_directus_backup.sql`, `pre_directus_upgrade_20260424_1948.sql` —
+- `violina_directus_backup.sql`, `pre_directus_upgrade_20260424_1948.sql` —
   Directus backups taken at the cutover window
 - `migrations/` — empty leftover directory
 - `.playwright-mcp/`, `screenshots/`, `assessment.org` — review/test artifacts
