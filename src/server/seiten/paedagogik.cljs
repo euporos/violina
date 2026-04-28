@@ -66,6 +66,7 @@
                          :beschreibung meta_description
                          :og-image     (when og-src
                                          (d/image-by-preset "og-image" og-src))
+                         :og-image-alt og_image_alt
                          :breadcrumbs  [[(or titel (snip/paedagogik locale))
                                          (:url req)]]}
                     [:div.mainframe

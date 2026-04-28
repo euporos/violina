@@ -60,7 +60,7 @@
   "Empty page… "
   [req head-data & comps]
   (let [{:keys [titel beschreibung into-head
-                og-image breadcrumbs cljs raw-title
+                og-image og-image-alt breadcrumbs cljs raw-title
                 noindex? notrack?]
          :or   {head-data []}} head-data
         locale                 (keyword (-> req :path-params :locale))
@@ -68,7 +68,12 @@
         localestring           (get full-locales locale)
         title                  (or raw-title
                                    (str (when titel (str titel " | "))
-                                        (get-in req [:config :site-name])))]
+                                        (get-in req [:config :site-name])))
+        og-image-url           (when og-image
+                                 (if (re-find #"^https?://" og-image)
+                                   og-image
+                                   (routing/make-path-absolute req og-image)))
+        canonical-url          (routing/make-path-absolute req (:url req))]
 
     (list (into [:head
                  (seo/charset)
@@ -96,14 +101,15 @@
                  (seo/open-graph
                   {:title       title
                    :description beschreibung
-                   :image       (when og-image
-                                  (if (re-find #"^https?://" og-image)
-                                    og-image
-                                    (routing/make-path-absolute req og-image)))
-                   :url         (routing/make-path-absolute req (:url req))
+                   :image       (when og-image-url
+                                  (if og-image-alt
+                                    {:url og-image-url :alt og-image-alt}
+                                    og-image-url))
+                   :url         canonical-url
                    :type        "website"})
 
                  (seo/description beschreibung)
+                 (seo/canonical canonical-url)
 
                  (seo/favicon-set {:base-path "/imgs/favicon"})
 
