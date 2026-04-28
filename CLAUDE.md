@@ -42,7 +42,7 @@ nix run .#process-reservoir   # process/resize images from reservoir/
 
 # Database
 nix run .#init-db             # initialize local dev database and Directus user
-nix run .#clone-prod-db       # clone production database to local dev
+nix run .#pull-db-from-prod   # pull production database to local dev
 
 # Directus schema
 nix run .#schema-export       # export Directus schema snapshot to schema/snapshot.json
@@ -93,7 +93,7 @@ schema/
   snapshot.json     # Directus schema snapshot (exported via nix run .#schema-export)
 scripts/
   init_db.sh        # Initialize local MariaDB + Directus admin user
-  clone_production_db.sh  # Clone prod DB to local dev
+  pull_db_from_prod.sh    # Pull prod DB to local dev
   redeploy.sh       # Production redeployment script
   upgrade_directus.sh     # Directus version upgrade helper
   pull_files.sh     # Pull uploaded files from production

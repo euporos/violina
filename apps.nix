@@ -152,11 +152,13 @@ in
     '';
   };
 
-  # Clone production database to local dev
-  clone-prod-db = mkApp "violina-clone-prod-db" ''
-    export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
-    bash scripts/clone_production_db.sh
-  '';
+  # Pull production Postgres directus DB → local devShell Postgres.
+  # Wrapped in `nix develop` so PGHOST/PGPORT/... from pgEnvHook are in scope.
+  pull-db-from-prod = flake-utils.lib.mkApp {
+    drv = pkgs.writeShellScriptBin "violina-pull-db-from-prod" ''
+      exec nix develop .#default --command bash scripts/pull_db_from_prod.sh
+    '';
+  };
 
   # Pull uploaded files from production
   pull-files = mkApp "violina-pull-files" ''

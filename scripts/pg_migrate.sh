@@ -16,7 +16,7 @@ mysql -u root -e 'SELECT 1' >/dev/null
 pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" >/dev/null
 
 # 1. Fresh prod clone into MariaDB
-bash scripts/clone_production_db.sh
+bash scripts/pull_db_from_prod.sh
 
 # Stop Directus before rewriting its DB so it doesn't fight the bootstrap.
 # process-compose's REST API is on $PC_PORT_NUM (default 8080); fall through
