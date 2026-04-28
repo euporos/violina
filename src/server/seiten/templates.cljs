@@ -59,7 +59,7 @@
 (defn blank_hiccup
   "Empty page… "
   [req head-data & comps]
-  (let [{:keys [titel beschreibung into-head
+  (let [{:keys [titel beschreibung into-head extra-ld
                 og-image og-image-alt breadcrumbs cljs raw-title
                 noindex? notrack?]
          :or   {head-data []}} head-data
@@ -90,6 +90,9 @@
                     req
                     (or breadcrumbs
                         (when titel [[titel (:url req)]])))))
+
+                 (when (seq extra-ld)
+                   (seo/ld (vec extra-ld)))
 
                  [:script {:src (m/cache-bust "/js/pedestrian.js")}]
 
