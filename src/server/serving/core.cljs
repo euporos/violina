@@ -115,7 +115,7 @@
                       posthog-origin (conj posthog-origin))
    :object-src      ["'none'"]
    :base-uri        ["'self'"]
-   :form-action     ["'self'"]
+   :form-action     ["'self'" "https://www.paypal.com"]
    :frame-ancestors ["'self'"]})
 
 (def macchiato-app
