@@ -104,7 +104,7 @@
 (defn- contact-cta [req]
   (let [locale (:locale req)]
     [:p.paedagogik__cta
-     [:button.standardlink.js-piano-email-link
+     [:button.standardlink.js-piano-email-link.kaufbutton
       {:type "button"}
       (get cta-text locale (:de cta-text))]]))
 

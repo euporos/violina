@@ -31,20 +31,20 @@
   (p/let [locale (:locale req)
           s      (get strings locale (:de strings))
           rendered (templates/head-and-foot-dynamic
-                  req {:titel        (:titel s)
-                       :beschreibung (:meta s)
-                       :breadcrumbs  [[(:titel s) (:url req)]]}
-                  [:div.mainframe
-                   [:div.sheet
-                    [:div.sheet__header (:titel s)]
-                    [:div.sheet__body
-                     [:img.sheet__bild.sheet__bild--v
-                      {:src (d/image-by-preset "w1200" bild)}]
-                     [:div.sheet__fliesstext
-                      [:p.ql-align-center [:strong "Violina Petrychenko"]]
-                      [:p.ql-align-center (:mobil s) ": " phone]
-                      [:p.ql-align-center (:anfragen s)]
-                      [:p.ql-align-center
-                       [:button.standardlink.js-piano-email-link
-                        {:type "button"} "Email"]]]]]])]
+                    req {:titel        (:titel s)
+                         :beschreibung (:meta s)
+                         :breadcrumbs  [[(:titel s) (:url req)]]}
+                    [:div.mainframe
+                     [:div.sheet
+                      [:div.sheet__header (:titel s)]
+                      [:div.sheet__body
+                       [:img.sheet__bild.sheet__bild--v
+                        {:src (d/image-by-preset "w1200" bild)}]
+                       [:div.sheet__fliesstext
+                        [:p.ql-align-center [:strong "Violina Petrychenko"]]
+                        [:p.ql-align-center (:mobil s) ": " phone]
+                        [:p.ql-align-center (:anfragen s)]
+                        [:p.ql-align-center
+                         [:button.standardlink.js-piano-email-link.kaufbutton
+                          {:type "button"} "Email"]]]]]])]
     (ph/html->response rendered)))
