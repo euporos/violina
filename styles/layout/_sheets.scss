@@ -45,6 +45,11 @@
         }
     }
 
+    &__untertitel {
+        font-size: 1.25rem;
+        margin-top: 0.3rem;
+    }
+
     &__body {
         @include clearfix;
 

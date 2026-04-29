@@ -29,6 +29,7 @@
                [s/orte-postleitzahl :postleitzahl]
                [s/orte-stadt :stadt]
                (db/localized s/paedagogik-titel locale)
+               (db/localized s/paedagogik-untertitel locale)
                (db/localized s/paedagogik-meta_title locale)
                (db/localized s/paedagogik-meta_description locale)
                (db/localized s/paedagogik-og_image_alt locale)
@@ -110,7 +111,7 @@
 (defhandler handler [req]
   (p/let [locale  (:locale req)
           rows    (db/query (paedagogik-query locale))
-          {:keys [titel meta_title meta_description hauptbild og_bild
+          {:keys [titel untertitel meta_title meta_description hauptbild og_bild
                   og_image_alt Beschreibung]
            :as   row} (first rows)
           og-src        (or og_bild hauptbild)
@@ -126,7 +127,10 @@
                          :extra-ld     (ld-graph row canonical-url og-image-url)}
                     [:div.mainframe
                      [:article.sheet
-                      [:div.sheet__header (or titel (snip/paedagogik locale))]
+                      [:div.sheet__header
+                       [:div.sheet__titel (or titel (snip/paedagogik locale))]
+                       (when untertitel
+                         [:div.sheet__untertitel untertitel])]
                       [:div.sheet__body
                        (when hauptbild
                          [:img.sheet__bild.sheet__bild--h
