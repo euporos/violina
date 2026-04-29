@@ -13,7 +13,15 @@ DUMP_REMOTE="/tmp/violina-directus-clone-$(date -u +%Y%m%dT%H%M%SZ).sql"
 DUMP_LOCAL="/tmp/$(basename "$DUMP_REMOTE")"
 
 LOCAL_DB="${PGDATABASE:-directus}"
-LOCAL_USER="${PGUSER:-directus}"
+# The role Directus connects as — read from directus/.env so ownership of the
+# restored objects matches what the running app uses. NOT $PGUSER: in the
+# devShell that's the postgres superuser, and reassigning ownership to it
+# leaves Directus with permission-denied on every table.
+LOCAL_USER="$(
+  grep -E '^DB_USER=' "$(dirname "$0")/../directus/.env" \
+    | head -n1 | cut -d= -f2- | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
+)"
+[[ -n "$LOCAL_USER" ]] || { echo "Could not read DB_USER from directus/.env" >&2; exit 1; }
 
 echo "=== Clone production DB → local ==="
 echo "  Source: $SERVER → (DB_DATABASE from $REMOTE_ENV)"
