@@ -24,6 +24,14 @@
         margin-top: calc(#{$ppadding} * 1.8);
     }
 
+    h1#{&}__titel {
+        font-size: inherit;
+        font-weight: inherit;
+        color: inherit;
+        margin: 0;
+        line-height: inherit;
+    }
+
 
     &__header {
         font-variant: small-caps;
