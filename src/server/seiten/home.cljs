@@ -220,9 +220,9 @@
   (let [{:keys [title body link]} (get paedagogik-home-text (:locale req)
                                        (:de paedagogik-home-text))]
     (homesection title
-                 [:div.homesection__paedagogik
+                 [:div.homesection.homesection__paedagogik
                   [:p body]
-                  [:a {:href (routing/reverse-match req :paedagogik {})} link]])))
+                  [:a.standardlink {:href (routing/reverse-match req :paedagogik {})} link]])))
 
 ;; ##################
 ;; #### Handler #####
@@ -259,6 +259,7 @@
                       (begruessung-section req begruessung)
                       (homesection "Festival: Sounds of Ukraine" (festival req))
                       (video-section begruessung)
+                      (paedagogik-section req)
                       (homesection [:a {:href (routing/reverse-match req :cds {})}
                                     (snip/meine-neue-cd locale)]
                                    (cd req featured-cd))
@@ -272,7 +273,6 @@
                         (homesection "Інтерв'ю про Мрії на Радіо Ісландія" (radio-islandia)))
                       (homesection (snip/home-presse locale)
                                    (presse-section req artikel))
-                      (paedagogik-section req)
                       (when (= :de locale)
                         (homesection nil (wdr)))]))]
     (ph/html->response rendered)))
