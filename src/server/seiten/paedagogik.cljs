@@ -1,5 +1,7 @@
 (ns seiten.paedagogik
-  (:require [comp.snippets :as snip]
+  (:require [clojure.string :as str]
+            [comp.snippets :as snip]
+            [config.env :as env]
             [db.schema :as s]
             [db.setup :as db]
             [directus.core :as d]
@@ -37,13 +39,26 @@
    :from      [[s/paedagogik_t :paedagogik]]
    :left-join [:orte [:= s/paedagogik-adresse s/orte-id]]
    :limit     1})
+(defn- trim-or-nil [s] (when s (let [t (str/trim s)] (when-not (str/blank? t) t))))
+
 (defn- postal-address [{:keys [strasse postleitzahl stadt]}]
-  (when (or strasse postleitzahl stadt)
-    (ld/entity :PostalAddress
-               (cond-> {:addressCountry "DE"}
-                 strasse      (assoc :streetAddress strasse)
-                 postleitzahl (assoc :postalCode postleitzahl)
-                 stadt        (assoc :addressLocality stadt)))))
+  (let [strasse      (trim-or-nil strasse)
+        postleitzahl (trim-or-nil postleitzahl)
+        stadt        (trim-or-nil stadt)]
+    (when (or strasse postleitzahl stadt)
+      (ld/entity :PostalAddress
+                 (cond-> {:addressCountry "DE"}
+                   strasse      (assoc :streetAddress strasse)
+                   postleitzahl (assoc :postalCode postleitzahl)
+                   stadt        (assoc :addressLocality stadt))))))
+
+(defn- real-phone
+  "Returns the configured contact phone iff it doesn't look like the
+  placeholder. Skipping a fake number is better than emitting one in
+  JSON-LD, where Google may surface it in rich results."
+  []
+  (let [p (trim-or-nil (env/setting :contact-phone))]
+    (when (and p (not (re-find #"0000000" p))) p)))
 
 (defn- ld-graph
   "Schema.org @graph: MusicSchool (the offer + venue), Person (Violina, the
@@ -60,15 +75,22 @@
                                         :name         "Violina Petrychenko"
                                         :jobTitle     "Konzertpianistin und Klavierpädagogin"
                                         :sameAs       violina-same-as}))
-        school      (ld/entity :MusicSchool
+        phone       (real-phone)
+        ;; Multi-type as both MusicSchool and LocalBusiness so Google
+        ;; surfaces a LocalBusiness rich result. MusicSchool alone
+        ;; (sub-class of EducationalOrganization, not LocalBusiness)
+        ;; does not trigger any rich-result feature.
+        school      (ld/entity ["MusicSchool" "LocalBusiness"]
                                (cond-> {"@id"        school-id
                                         :name        (or titel "Klavierunterricht in Köln")
                                         :description meta_description
                                         :url         canonical-url
+                                        :priceRange  "€45–€50"
                                         :areaServed  ["Köln" "Rheinland" "Nordrhein-Westfalen"]
                                         :founder     {"@id" person-id}}
                                  image-url (assoc :image image-url)
-                                 address   (assoc :address address)))
+                                 address   (assoc :address address)
+                                 phone     (assoc :telephone phone)))
         service     (ld/entity :Service
                                {"@id"          service-id
                                 :name          "Klavierunterricht"
