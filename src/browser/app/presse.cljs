@@ -70,7 +70,10 @@
 (defn popup []
   (let [a @article]
     [:div#pressepopup.popup
-     {:class (when a "popup--revealed")}
+     {:class    (when a "popup--revealed")
+      :on-click (fn [e]
+                  (when (= (.-target e) (.-currentTarget e))
+                    (close)))}
      [:div.popup__window
       [:div.popup__schliesskreuz {:on-click close} "×"]
       [:div#popup__artikelvollansicht
