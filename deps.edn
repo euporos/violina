@@ -5,7 +5,7 @@
          "src/common"
          "src/test"]
  :deps {;; psite monorepo — git@github.com:euporos/psite.git
-        psite/directus-schema  {:git/url "git@github.com:euporos/psite.git" :git/sha "3e7c5013372b095f807de0fadf3da544052c1995" :deps/root "directus-schema"}
+        psite/directus-schema  {:git/url "git@github.com:euporos/psite.git" :git/sha "4faa1f5eea71a766cbf925db36139a84bba2236f" :deps/root "directus-schema"}
         psite/macchiato-async  {:git/url "git@github.com:euporos/psite.git" :git/sha "8def892e847f9fcebaaea0c52de12bb97ac56b42" :deps/root "macchiato-async"}
         psite/psite-config     {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-config"}
         psite/psite-datetime   {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-datetime"}
