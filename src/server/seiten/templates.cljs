@@ -257,7 +257,10 @@
      [:img.socialmedia__icon {:src "/imgs/facebook.png"}]]
     [:a.socialmedia__item
      {:href "https://www.youtube.com/channel/UCzwTs30aFoC93xPBdEQL6jQ/videos"}
-     [:img.socialmedia__icon {:src "/imgs/youtube.png"}]]]
+     [:img.socialmedia__icon {:src "/imgs/youtube.png"}]]
+    [:a.socialmedia__item
+     {:href "https://www.instagram.com/vpviolina"}
+     [:img.socialmedia__icon {:src "/imgs/instagram.png"}]]]
    [:div.footer__copyright
     "© " (t/year (t/now)) ", Violina Petrychenko, Website: Oliver Motz"]])
 
