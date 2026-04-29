@@ -4,8 +4,9 @@
             [seiten.routes :as seiten]))
 
 (defn run [_]
-  (let [settings (edn/read-string {:readers {'psite/secret             (constantly nil)
-                                              'psite-config.read/obfuscate identity}}
+  ;; gen-links only needs :canonical-domain, so swallow any reader tag
+  ;; (#psite/secret, #psite-config.read/obfuscate, future ones) as identity.
+  (let [settings (edn/read-string {:default (fn [_tag v] v)}
                                   (slurp "settings.edn"))]
     (links/generate-links
      {:routes        (into ["/{locale}"] seiten/routes)
