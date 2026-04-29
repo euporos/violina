@@ -1,12 +1,11 @@
 (ns seiten.kontakt
-  (:require [kitchen-async.promise :as p]
+  (:require [directus.core :as d]
+            [kitchen-async.promise :as p]
             [macchiato-async.core :refer-macros [defhandler]]
             [psite-hiccup.core :as ph]
             [seiten.templates :as templates]))
 
 (def ^:private bild "397ae0dc-438e-4c4d-8b28-aedfa32c5873")
-(def ^:private bild-url
-  (str "/directus/assets/" bild "?key=w1200"))
 
 (def ^:private phone "+49 176 615 25 868")
 
@@ -39,7 +38,8 @@
                    [:div.sheet
                     [:div.sheet__header (:titel s)]
                     [:div.sheet__body
-                     [:img.sheet__bild.sheet__bild--v {:src bild-url}]
+                     [:img.sheet__bild.sheet__bild--v
+                      {:src (d/image-by-preset "w1200" bild)}]
                      [:div.sheet__fliesstext
                       [:p.ql-align-center [:strong "Violina Petrychenko"]]
                       [:p.ql-align-center (:mobil s) ": " phone]
