@@ -1,5 +1,4 @@
 {:deps {:aliases [:shadow-cljs]}
- :nrepl {:port 9000}
  :builds {:server {:target     :node-script
                    :output-to  "server/server.js"
                    :output-dir "server"
