@@ -52,14 +52,6 @@
                    postleitzahl (assoc :postalCode postleitzahl)
                    stadt        (assoc :addressLocality stadt))))))
 
-(defn- real-phone
-  "Returns the configured contact phone iff it doesn't look like the
-  placeholder. Skipping a fake number is better than emitting one in
-  JSON-LD, where Google may surface it in rich results."
-  []
-  (let [p (trim-or-nil (env/setting :contact-phone))]
-    (when (and p (not (re-find #"0000000" p))) p)))
-
 (defn- ld-graph
   "Schema.org @graph: MusicSchool (the offer + venue), Person (Violina, the
   teacher), Service (the lessons). IDs cross-reference each other. The
@@ -75,7 +67,7 @@
                                         :name         "Violina Petrychenko"
                                         :jobTitle     "Konzertpianistin und Klavierpädagogin"
                                         :sameAs       violina-same-as}))
-        phone       (real-phone)
+        phone "+4917661525868"
         ;; Multi-type as both MusicSchool and LocalBusiness so Google
         ;; surfaces a LocalBusiness rich result. MusicSchool alone
         ;; (sub-class of EducationalOrganization, not LocalBusiness)
