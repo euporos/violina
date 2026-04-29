@@ -37,22 +37,6 @@
    :from      [[s/paedagogik_t :paedagogik]]
    :left-join [:orte [:= s/paedagogik-adresse s/orte-id]]
    :limit     1})
-
-(defn- adresse-section [{:keys [strasse postleitzahl stadt]}]
-  (when (or strasse postleitzahl stadt)
-    [:address.paedagogik__adresse
-     {:itemscope true :itemtype "https://schema.org/PostalAddress"}
-     (when strasse
-       [:span {:itemprop "streetAddress"} strasse])
-     (when (or postleitzahl stadt)
-       (list
-        (when strasse [:br])
-        (when postleitzahl
-          [:span {:itemprop "postalCode"} postleitzahl])
-        (when (and postleitzahl stadt) " ")
-        (when stadt
-          [:span {:itemprop "addressLocality"} stadt])))]))
-
 (defn- postal-address [{:keys [strasse postleitzahl stadt]}]
   (when (or strasse postleitzahl stadt)
     (ld/entity :PostalAddress
@@ -139,6 +123,5 @@
                        [:div.sheet__fliesstext
                         (when Beschreibung
                           (ph/dangerous-html Beschreibung))
-                        (adresse-section row)
                         (contact-cta req)]]]])]
     (ph/html->response rendered)))
