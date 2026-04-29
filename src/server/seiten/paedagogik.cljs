@@ -126,7 +126,7 @@
                     [:div.mainframe
                      [:article.sheet
                       [:div.sheet__header
-                       [:div.sheet__titel (or titel (snip/paedagogik locale))]
+                       [:h1.sheet__titel (or titel (snip/paedagogik locale))]
                        (when untertitel
                          [:div.sheet__untertitel untertitel])]
                       [:div.sheet__body
