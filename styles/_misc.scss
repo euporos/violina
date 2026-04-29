@@ -21,4 +21,8 @@
     border: 2px solid white;
 }
 
+.modal:not(.is-active) {
+    display: none;
+}
+
  
