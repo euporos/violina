@@ -4,7 +4,8 @@
             [seiten.routes :as seiten]))
 
 (defn run [_]
-  (let [settings (edn/read-string {:readers {'psite/secret (constantly nil)}}
+  (let [settings (edn/read-string {:readers {'psite/secret             (constantly nil)
+                                              'psite-config.read/obfuscate identity}}
                                   (slurp "settings.edn"))]
     (links/generate-links
      {:routes        (into ["/{locale}"] seiten/routes)
