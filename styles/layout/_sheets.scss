@@ -70,6 +70,17 @@
         p {
             margin-top: $ppadding;
         }
+
+        ul, ol {
+            padding-left: 1.2em;
+            margin-top: $ppadding;
+            list-style-position: outside;
+        }
+
+        ul { list-style-type: disc; }
+        ol { list-style-type: decimal; }
+
+        li + li { margin-top: 0.25em; }
     }
 
     &__bild {
