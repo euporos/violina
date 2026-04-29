@@ -104,8 +104,8 @@
 (defn- contact-cta [req]
   (let [locale (:locale req)]
     [:p.paedagogik__cta
-     [:a.standardlink
-      {:href (str (routing/reverse-match req :home {}) "#contact")}
+     [:button.standardlink.js-piano-email-link
+      {:type "button"}
       (get cta-text locale (:de cta-text))]]))
 
 (defhandler handler [req]

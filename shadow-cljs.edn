@@ -21,6 +21,7 @@
                                                  app.cds
                                                  app.modal
                                                  app.obfuscate
+                                                 app.paedagogik
                                                  app.presse]}}
                     :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true}}}
                     :devtools   {:watch-dir "public/compiled/bundle"

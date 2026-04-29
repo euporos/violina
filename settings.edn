@@ -14,7 +14,9 @@
                        :mode
                        :noindex
                        :show-errors?
-                       :email-to-b64]
+                       :email-to-b64
+                       :piano-email]
+ :piano-email #psite-config.read/obfuscate "piano@violina-petrychenko.de"
  :noindex true
  :show-errors? true ;false
  :mail-on-errors? false

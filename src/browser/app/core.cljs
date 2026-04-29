@@ -3,6 +3,7 @@
    [app.cds :as cds]
    [app.modal :as modal]
    [app.obfuscate :as obfuscate]
+   [app.paedagogik :as paedagogik]
    [app.presse :as presse]
    [psite-config.browser]
    [psite-transit.core :as transit]
@@ -19,6 +20,7 @@
   (psite-config.browser/load js/frontend_env_string)
   (obfuscate/email)
   (obfuscate/phone)
+  (paedagogik/init)
   (modal/init)
   ;; Touch app.presse so shadow-cljs includes it in the bundle's require graph;
   ;; the actual init is triggered via the script onload (see seiten/templates).
