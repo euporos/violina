@@ -220,7 +220,7 @@
   (let [{:keys [title body link]} (get paedagogik-home-text (:locale req)
                                        (:de paedagogik-home-text))]
     (homesection title
-                 [:div.homesection.homesection__paedagogik
+                 [:div
                   [:p body]
                   [:a.standardlink {:href (routing/reverse-match req :paedagogik {})} link]])))
 
