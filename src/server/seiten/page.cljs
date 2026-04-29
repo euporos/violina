@@ -16,17 +16,19 @@
   {:email (html (ph/obfuscate-email [:frontend :contact-email]))
    :phone (html (ph/obfuscate-phone [:frontend :contact-phone]))})
 
-;; Legacy /pg/1-pädagogik URL is the old home of the teaching page.
-;; Permanently redirect it to the dedicated, keyword-bearing route so
-;; existing inbound links and search results route to the new hub.
-(def ^:private legacy-paedagogik-page-id 1)
+;; Legacy /pg/{id}-... URLs are old homes of dedicated pages.
+;; Permanently redirect them to the keyword-bearing routes so existing
+;; inbound links and search results route to the new hubs.
+(def ^:private legacy-redirects
+  {1 :paedagogik
+   2 :kontakt})
 
 (defhandler handler [req]
   (p/let [locale  (:locale req)
           page-id (routing/path-param req :page-id)]
-    (if (= page-id legacy-paedagogik-page-id)
+    (if-let [target (get legacy-redirects page-id)]
       (r/moved-permanently
-       (routing/reverse-match req :paedagogik {}))
+       (routing/reverse-match req target {}))
       (p/let [pages    (db/query {:select [s/sonderseiten-id
                                            s/sonderseiten-bild
                                            s/sonderseiten-bildlayout

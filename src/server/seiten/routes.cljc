@@ -7,6 +7,7 @@
              [seiten.home :as home]
              [seiten.konzertliste :as konzertliste]
              [seiten.kuenstler :as kuenstler]
+             [seiten.kontakt :as kontakt]
              [seiten.paedagogik :as paedagogik]
              [seiten.page :as page]
              #_[seiten.permanent :as permanent]
@@ -81,6 +82,9 @@
 
     ["/klavierunterricht-koeln" {:name    :paedagogik
                                  :handler paedagogik/handler}]
+
+    ["/kontakt" {:name    :kontakt
+                 :handler kontakt/handler}]
 
     ["/pg"
      ["/{page-id}-{page-slug}" {:handler    page/handler
