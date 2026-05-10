@@ -46,3 +46,12 @@ preise.edn
 /directus.nix-shell
 /deps.local.edn
 /directus/.env
+/directus/uploads/
+
+# Tooling caches
+/.claude/
+/.playwright-mcp/
+
+# Local DB dumps and ad-hoc backups
+/*.sql
+*.bak
