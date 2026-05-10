@@ -257,6 +257,25 @@ in
       name = "violina-macchiato-deploy-prod";
       text = ''
         SERVER="phylax@netcup-vps-2-arm"
+        echo "=== Checking local main vs origin/main ==="
+        git fetch origin main >/dev/null 2>&1 || true
+        LOCAL_MAIN=$(git rev-parse main)
+        REMOTE_MAIN=$(git rev-parse origin/main 2>/dev/null || echo "")
+        if [ "$LOCAL_MAIN" != "$REMOTE_MAIN" ]; then
+          echo "Local main ($LOCAL_MAIN) differs from origin/main ($REMOTE_MAIN)."
+          read -r -p "Force push main to origin first? [y/N] " ANSWER
+          case "$ANSWER" in
+            [yY]|[yY][eE][sS])
+              echo "=== Force pushing main ==="
+              git push --force-with-lease origin main
+              ;;
+            *)
+              echo "Skipping push. Server will deploy whatever is currently on origin/main."
+              ;;
+          esac
+        else
+          echo "main is up to date with origin/main."
+        fi
         echo "=== Deploying to production ==="
         DEPLOYED_SHA=$(ssh "$SERVER" '
           set -euo pipefail
