@@ -1,5 +1,6 @@
 {:merge-config "../settings.edn"
  :directus-url    "/directus/"
+ :directus-proxy-upstream "http://localhost:8055" ; presence enables /directus/* reverse proxy in macchiato; leave unset in prod
  :canonical-domain "new.violina-petrychenko.de"
  :site-name      "Violina Petrychenko – Pianistin"
  :google-site-verfication ""

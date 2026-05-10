@@ -1,5 +1,6 @@
 (ns ^:dev/always serving.core
-  (:require [clojure.string :as str]
+  (:require [api.directus-proxy :as directus-proxy]
+            [clojure.string :as str]
             [config.env :as env]
             [db.setup]
             [geo]
@@ -133,11 +134,25 @@
     true (middleware/wrap-csp csp-directives)
     true wrap-config))
 
+(def directus-proxy-upstream (env/setting :directus-proxy-upstream))
+
 (defn app [{:keys [hostname uri] :as req} res raise]
   (try
-    (if (str/starts-with? hostname "www.")
+    (cond
+      (str/starts-with? hostname "www.")
       (let [canonical-url (str "https://" (env/setting :canonical-domain) uri)]
         (res (r/moved-permanently canonical-url)))
+
+      ;; Dispatch /directus/* to the reverse proxy before the macchiato
+      ;; middleware stack runs, so the raw Node request stream still has the
+      ;; body for POST/PATCH/PUT.
+      (and directus-proxy-upstream
+           (or (= uri "/directus") (str/starts-with? (or uri "") "/directus/")))
+      ;; defhandler emits a 3-arity Macchiato handler; clj-kondo sees the
+      ;; defn shape (1-arity) via :lint-as.
+      #_:clj-kondo/ignore (directus-proxy/handler req res raise)
+
+      :else
       (macchiato-app req res raise))
     (catch js/Error e
       (println "Caught exception: %s" (.-stack e))

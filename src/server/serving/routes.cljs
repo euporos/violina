@@ -19,6 +19,9 @@
         (env/setting :locale-fallback)))
 
 (def routes
+  ;; The /directus/* reverse proxy is dispatched in serving.core/app, before
+  ;; the macchiato middleware stack runs, so request bodies survive for POST
+  ;; login etc. It is therefore not registered here.
   [["/" {:coercion   reitit.coercion.malli/coercion
          :parameters {:query [:map
                               [:debug {:optional true} :boolean]]}}
