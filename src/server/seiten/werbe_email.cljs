@@ -37,7 +37,7 @@
    Mirrors the festival template's icons_block structure so Outlook
    keeps its VML fallback happy."
   [req {:keys [bild titel] :as programme}]
-  (let [img-src (d/image-by-preset "w200" bild)
+  (let [img-src (d/image-by-preset "w600" bild)
         href    (programme-url req programme)
         title   (escape-html titel)]
     (str
@@ -71,9 +71,9 @@
   {:hero_image      (d/image-by-preset "w1600" (:hero_image singleton))
    :thank_you       (:thank_you singleton)
    :salutation      (:salutation singleton)
-   :main_text       (some-> (:main_text singleton)
-                            escape-html
-                            (str/replace "\n" "<br>"))
+   ;; main_text is a Rich-Text-HTML field in Directus — already valid
+   ;; HTML, including paragraph tags and entities. Pass through raw.
+   :main_text       (:main_text singleton)
    :details_heading (:details_heading singleton)
    :program_blocks  (str/join "\n" (map #(program-block-html req %) programmes))})
 
