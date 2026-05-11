@@ -25,6 +25,16 @@
         (str/replace ">" "&gt;")
         (str/replace "\"" "&quot;"))))
 
+(defn- absolute-image
+  "Builds an absolute image URL. `directus-url` setting is `/directus/`
+   (a relative proxy path), which mail clients can't resolve — so we
+   prepend the request's scheme+host."
+  [req preset file-id]
+  (let [path (d/image-by-preset preset file-id)]
+    (if (re-find #"^https?://" path)
+      path
+      (routing/make-path-absolute req path))))
+
 (defn- programme-url [req {:keys [id slug]}]
   (let [path (routing/reverse-match req :programm
                                     {:locale     (name de-locale)
@@ -37,7 +47,7 @@
    Mirrors the festival template's icons_block structure so Outlook
    keeps its VML fallback happy."
   [req {:keys [bild titel] :as programme}]
-  (let [img-src (d/image-by-preset "w600" bild)
+  (let [img-src (absolute-image req "w600" bild)
         href    (programme-url req programme)
         title   (escape-html titel)]
     (str
@@ -68,7 +78,7 @@
      "</tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table>")))
 
 (defn- mustache-context [req singleton programmes]
-  {:hero_image      (d/image-by-preset "w1600" (:hero_image singleton))
+  {:hero_image      (absolute-image req "w1600" (:hero_image singleton))
    :thank_you       (:thank_you singleton)
    :salutation      (:salutation singleton)
    ;; main_text is a Rich-Text-HTML field in Directus — already valid
