@@ -9128,7 +9128,7 @@
               "icon": "sim_card_download",
               "label": "Download EML",
               "type": "primary",
-              "url": "https://violina-petrychenko.de/api/werbe-email.eml"
+              "url": "https://violina-petrychenko.de/de/admin/werbe-email.eml"
             }
           ]
         },
