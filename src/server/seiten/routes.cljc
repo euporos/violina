@@ -14,6 +14,7 @@
              [seiten.presse :as presse]
              [seiten.programme :as programme]
              [seiten.termine :as termine]
+             [seiten.werbe-email :as werbe-email]
              [setup.directus-auth :as directus-auth]))
   #?(:clj  (:require      [psite-routing.macros :as prm])
      :cljs (:require-macros [psite-routing.macros :as prm])))
@@ -96,4 +97,6 @@
                                                     [:page-slug :string]]}}]]
     ["/admin" {:middleware [directus-auth/wrap-directus-user]}
      ["" {:handler admin/handler
-          :name    :admin}]]]))
+          :name    :admin}]
+     ["/werbe-email.eml" {:handler werbe-email/handler
+                          :name    :werbe-email-eml}]]]))

@@ -1,30 +1,21 @@
-(ns api.werbe-email
-  "Generates a downloadable .eml from the `werbe_email` Directus singleton.
-   The singleton holds a hero image, body copy, and an ordered list of
-   programmes; we render the email-templates/werbe-email.html template,
-   wrap the result in an RFC822 message via nodemailer's MailComposer, and
-   stream it back with Content-Disposition: attachment."
-  (:require ["fs" :as fs]
-            ["nodemailer" :as nodemailer]
-            ["path" :as path]
+(ns seiten.werbe-email
+  "Renders the `werbe_email` Directus singleton into a downloadable .eml.
+   wrap-directus-user middleware on the parent /admin route attaches
+   the Directus user when a session cookie is present; we still gate
+   here because the middleware doesn't redirect on its own."
+  (:require [cljstache.core :as tache]
             [clojure.string :as str]
             [db.schema :as s]
             [db.setup :as db]
             [directus.core :as d]
             [kitchen-async.promise :as p]
             [macchiato-async.core :refer-macros [defhandler]]
+            [macchiato.fs :as fs]
             [macchiato.util.response :as r]
-            [psite-routing.core :as routing]))
+            [psite-routing.core :as routing]
+            [setup.directus-auth :as directus-auth]))
 
 (def ^:private de-locale :de)
-
-(def ^:private template-path
-  "Resolved relative to the running server.js. Built artefacts land in
-   /media/.../server/, so we walk up to the repo root and into resources/."
-  (.resolve path js/__dirname ".." "resources" "email-templates" "werbe-email.html"))
-
-(defn- load-template []
-  (.readFileSync fs template-path "utf8"))
 
 (defn- escape-html [s]
   (when s
@@ -42,9 +33,9 @@
     (routing/make-path-absolute req path)))
 
 (defn- program-block-html
-  "Single icon-block row in the email body: programme image + linked title.
-   Mirrors the festival template's icons_block structure so Outlook keeps
-   its VML fallback happy."
+  "One icon_block row in the body: programme image + linked title.
+   Mirrors the festival template's icons_block structure so Outlook
+   keeps its VML fallback happy."
   [req {:keys [bild titel] :as programme}]
   (let [img-src (d/image-by-preset "w200" bild)
         href    (programme-url req programme)
@@ -76,33 +67,30 @@
      title "</a></td>"
      "</tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table>")))
 
-(defn- render-template [req singleton programmes]
-  (let [tpl (load-template)
-        replacements {"{{hero_image}}"      (d/image-by-preset "w1600" (:hero_image singleton))
-                      "{{thank_you}}"       (escape-html (:thank_you singleton))
-                      "{{salutation}}"      (escape-html (:salutation singleton))
-                      "{{main_text}}"       (some-> (:main_text singleton)
-                                                    escape-html
-                                                    (str/replace "\n" "<br>"))
-                      "{{details_heading}}" (escape-html (:details_heading singleton))
-                      "{{program_blocks}}"  (str/join "\n"
-                                                      (map #(program-block-html req %) programmes))}]
-    (reduce-kv (fn [acc k v] (str/replace acc k (or v ""))) tpl replacements)))
+(defn- mustache-context [req singleton programmes]
+  {:hero_image      (d/image-by-preset "w1600" (:hero_image singleton))
+   :thank_you       (:thank_you singleton)
+   :salutation      (:salutation singleton)
+   :main_text       (some-> (:main_text singleton)
+                            escape-html
+                            (str/replace "\n" "<br>"))
+   :details_heading (:details_heading singleton)
+   :program_blocks  (str/join "\n" (map #(program-block-html req %) programmes))})
 
-(defn- build-eml
-  "Wraps the HTML body in an RFC822 message via nodemailer's MailComposer.
-   Resolves to a Buffer containing the full .eml payload."
-  [subject html]
-  (js/Promise.
-   (fn [resolve reject]
-     (let [composer (nodemailer/MailComposer.
-                     #js {:subject subject
-                          :html    html
-                          :from    "info@violina-petrychenko.de"
-                          :to      ""})]
-       (.build (.compile composer)
-               (fn [err buf]
-                 (if err (reject err) (resolve buf))))))))
+(defn- generate-eml
+  "Builds an RFC822 message as a string. No `To:`/`Bcc:` — the user
+   adds recipients in their mail client after opening the file."
+  [subject html-body]
+  (let [encoded-subject (str "=?UTF-8?B?"
+                             (.toString (js/Buffer.from subject "utf8") "base64")
+                             "?=")]
+    (str "MIME-Version: 1.0\r\n"
+         "From: info@violina-petrychenko.de\r\n"
+         "Subject: " encoded-subject "\r\n"
+         "Content-Type: text/html; charset=UTF-8\r\n"
+         "Content-Transfer-Encoding: 8bit\r\n"
+         "\r\n"
+         html-body)))
 
 (defn- singleton-query []
   {:select [s/werbe_email-id
@@ -116,23 +104,24 @@
    :limit  1})
 
 (defn- programmes-query [locale]
-  {:select    [s/programme-id
-               s/programme-slug
-               s/programme-bild
-               (db/localized s/programme-titel locale)]
-   :from      [[:werbe_email_programme :wep]]
-   :join      [[s/programme_t :programme] [:= :wep.programme_id s/programme-id]]
-   :order-by  [[:wep.sort :asc]]})
+  {:select   [s/programme-id
+              s/programme-slug
+              s/programme-bild
+              (db/localized s/programme-titel locale)]
+   :from     [[:werbe_email_programme :wep]]
+   :join     [[s/programme_t :programme] [:= :wep.programme_id s/programme-id]]
+   :order-by [[:wep.sort :asc]]})
 
 (defhandler handler [req]
   (if-not (:directus-user req)
-    (r/unauthorized "Directus admin session required.")
+    (directus-auth/directus-login-redirect req)
     (p/let [rows       (db/query (singleton-query))
-            singleton  (first rows)
-            programmes (db/query (programmes-query de-locale))
-            html       (render-template req singleton programmes)
-            eml        (build-eml (or (:subject singleton) "") html)]
+          singleton  (first rows)
+          programmes (db/query (programmes-query de-locale))
+          html       (tache/render
+                      (fs/slurp "resources/email-templates/werbe-email.html")
+                      (mustache-context req singleton programmes))
+          eml        (generate-eml (or (:subject singleton) "") html)]
       (-> (r/ok eml)
           (r/header "Content-Disposition" "attachment; filename=\"werbe-email.eml\"")
           (r/content-type "message/rfc822")))))
-
