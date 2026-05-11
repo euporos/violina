@@ -688,7 +688,7 @@
         "icon": null,
         "archive_value": null,
         "item_duplication_fields": null,
-        "preview_url": "{{$SITE_URL}}/api/werbe-email.eml",
+        "preview_url": null,
         "note": null,
         "singleton": true,
         "hidden": false,
@@ -8828,7 +8828,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "11",
+        "sort": "4",
         "required": false,
         "translations": null
       },
@@ -8874,7 +8874,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "111",
+        "sort": "3",
         "required": false,
         "translations": null
       },
@@ -8918,7 +8918,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "1111",
+        "sort": "7",
         "required": false,
         "translations": null
       },
@@ -8962,7 +8962,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "11111",
+        "sort": "5",
         "required": false,
         "translations": null
       },
@@ -9006,7 +9006,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "111111",
+        "sort": "6",
         "required": false,
         "translations": null
       },
@@ -9050,7 +9050,7 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "1111111",
+        "sort": "8",
         "required": false,
         "translations": null
       },
@@ -9096,7 +9096,46 @@
         "validation": null,
         "collection": "werbe_email",
         "display_options": null,
-        "sort": "11111111",
+        "sort": "9",
+        "required": false,
+        "translations": null
+      }
+    },
+    {
+      "collection": "werbe_email",
+      "field": "links-ts71vz",
+      "type": "alias",
+      "meta": {
+        "validation_message": null,
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "interface": "presentation-links",
+        "group": null,
+        "readonly": false,
+        "width": "full",
+        "field": "links-ts71vz",
+        "searchable": true,
+        "note": null,
+        "conditions": null,
+        "hidden": false,
+        "display": null,
+        "options": {
+          "links": [
+            {
+              "actionType": "url",
+              "icon": "sim_card_download",
+              "label": "Download EML",
+              "type": "primary",
+              "url": "https://violina-petrychenko.de/api/werbe-email.eml"
+            }
+          ]
+        },
+        "validation": null,
+        "collection": "werbe_email",
+        "display_options": null,
+        "sort": "2",
         "required": false,
         "translations": null
       }
