@@ -134,4 +134,5 @@
           eml        (generate-eml (or (:subject singleton) "") html)]
       (-> (r/ok eml)
           (r/header "Content-Disposition" "attachment; filename=\"werbe-email.eml\"")
+          (r/header "Cache-Control" "no-store")
           (r/content-type "message/rfc822")))))
