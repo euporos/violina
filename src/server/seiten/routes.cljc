@@ -14,6 +14,7 @@
              [seiten.presse :as presse]
              [seiten.programme :as programme]
              [seiten.termine :as termine]
+             [seiten.translate :as translate]
              [seiten.werbe-email :as werbe-email]
              [setup.directus-auth :as directus-auth]))
   #?(:clj  (:require      [psite-routing.macros :as prm])
@@ -99,4 +100,10 @@
      ["" {:handler admin/handler
           :name    :admin}]
      ["/werbe-email.eml" {:handler werbe-email/handler
-                          :name    :werbe-email-eml}]]]))
+                          :name    :werbe-email-eml}]
+     ["/api/translation/gaps" {:handler translate/gaps-handler
+                               :name    :admin-translation-gaps}]
+     ["/api/translation/start" {:handler translate/start-handler
+                                :name    :admin-translation-start}]
+     ["/api/translation/job" {:handler translate/job-handler
+                              :name    :admin-translation-job}]]]))

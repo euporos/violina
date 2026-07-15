@@ -8,15 +8,18 @@
 (defhandler handler [req]
   (if-not (:directus-user req)
     (directus-auth/directus-login-redirect req)
-    (p/let [rendered (templates/head-and-foot-dynamic
-                      req {:titel    "Verwaltung"
+    (p/let [locale (or (some-> (get-in req [:parameters :path :locale]) name)
+                       (get-in req [:path-params :locale])
+                       "de")
+            rendered (templates/head-and-foot-dynamic
+                      req {:titel    "Übersetzungen"
                            :noindex  true
                            :notrack? true
-                           :cljs     {:js-data {}
+                           :cljs     {:js-data {:locale locale}
                                       :onload  "app.admin.main"}}
-                      [:div.section
-                       [:div.container
-                        [:div.content
-                         [:h1.title "Admin"]
+                      [:div.mainframe
+                       [:div.sheet
+                        [:div.sheet__header "Übersetzungen"]
+                        [:div.sheet__body
                          [:div#admin]]]])]
       (ph/html->response rendered))))

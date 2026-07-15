@@ -1,0 +1,146 @@
+// //  #############
+// //  ### Admin ###   Site-wide translation dashboard (app.admin)
+// //  #############
+
+.admin {
+    text-align: left;
+    font-size: 1rem;
+
+    &__section {
+        margin-bottom: calc(#{$ppadding} * 1.5);
+    }
+
+    &__subtitle {
+        font-variant: small-caps;
+        font-size: 1.4rem;
+        color: $basecolor;
+        margin-bottom: $ppadding;
+        padding-bottom: 0.3rem;
+        border-bottom: 2px solid $basecolor;
+    }
+
+    // secondary text action (← Sprachen, Erneut scannen)
+    &__back {
+        float: right;
+        padding: 0;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        font-variant: normal;
+        color: $basecolor;
+        cursor: pointer;
+
+        &:hover { text-decoration: underline; }
+    }
+
+    &__langs {
+        margin-bottom: $ppadding;
+
+        label {
+            margin-right: 1.5rem;
+            cursor: pointer;
+        }
+
+        input { margin-right: 0.3rem; }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: $ppadding;
+    }
+
+    &__note {
+        margin: $ppadding 0;
+        padding: $ppadding;
+        border: 2px solid $basecolor;
+        background: $base-transparent;
+
+        &--error {
+            border-color: #b00020;
+            color: #b00020;
+            background: rgba(#b00020, 0.08);
+        }
+    }
+
+    &__progress {
+        width: 100%;
+        height: 1rem;
+        margin: $ppadding 0;
+        accent-color: $basecolor;
+    }
+
+    &__tablewrap {
+        max-height: 60vh;
+        overflow-y: auto;
+        border: 1px solid rgba($basecolor, 0.3);
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+
+        th, td {
+            padding: 0.3rem 0.5rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: $base-transparent-lighter;
+            border-bottom: 2px solid $basecolor;
+            font-variant: small-caps;
+        }
+
+        tbody tr { border-bottom: 1px solid rgba($basecolor, 0.15); }
+
+        code {
+            font-family: monospace;
+            word-break: break-all;
+        }
+    }
+
+    &__group td {
+        background: $base-transparent;
+        font-variant: small-caps;
+    }
+
+    &__preview {
+        color: #555;
+        font-size: 0.85em;
+    }
+
+    &__tag {
+        display: inline-block;
+        margin-right: 0.25em;
+        padding: 0 0.4em;
+        border: 1px solid $basecolor;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        color: $basecolor;
+    }
+
+    &__status {
+        &--ok    { color: #0a7d00; font-weight: bold; }
+        &--error { color: #b00020; font-weight: bold; cursor: help; }
+    }
+}
+
+// Reuse the site button (.kaufbutton) with a ghost + disabled variant.
+.kaufbutton {
+    &--ghost {
+        background: transparent;
+        color: $basecolor;
+        border: 2px solid $basecolor;
+    }
+
+    &[disabled] {
+        opacity: 0.45;
+        cursor: default;
+    }
+}
