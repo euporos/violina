@@ -50,7 +50,7 @@
 				<div v-if="running && progress" class="progress">
 					<v-progress-circular indeterminate small />
 					<span>
-						Übersetze Feld {{ Math.min(progress.done + 1, progress.total) }}/{{ progress.total }}<template v-if="progress.current"> — {{ progress.current }}</template>
+						Übersetze {{ Math.min(progress.done + 1, progress.total) }}/{{ progress.total }}<template v-if="progress.current"> — {{ progress.current }}</template>
 					</span>
 				</div>
 			</template>
@@ -107,27 +107,33 @@ export default defineComponent({
 		async function translate() {
 			running.value = true;
 			error.value = null;
-			// One request per field so no single request holds the reverse proxy
-			// open long enough to hit its read timeout (→ 502) on text-heavy items.
-			const list = fields.value.length ? fields.value : [null];
-			progress.value = { done: 0, total: list.length, current: null };
+			// One request per field/language pair: the gateway translates languages
+			// sequentially, so a whole field × several languages in one request can
+			// still outlive the reverse-proxy read timeout (→ 502) on long fields.
+			// One pair keeps every request to a single gateway call.
+			const fieldList = fields.value.length ? fields.value : [null];
+			const pairs = [];
+			for (const field of fieldList) {
+				for (const lang of selected.value) pairs.push({ field, lang });
+			}
+			progress.value = { done: 0, total: pairs.length, current: null };
 			const filledLangs = new Set();
 			const errors = [];
 			try {
-				for (const field of list) {
-					progress.value = { ...progress.value, current: field };
+				for (const { field, lang } of pairs) {
+					progress.value = { ...progress.value, current: field ? `${field} → ${lang}` : lang };
 					try {
 						const { data } = await api.post(
 							`/llm-translate/${props.collection}/${encodeURIComponent(props.primaryKey)}`,
 							{
-								languages: selected.value,
+								languages: [lang],
 								overwrite: overwrite.value,
 								...(field ? { fields: [field] } : {}),
 							},
 						);
 						for (const l of Object.keys(data.filled || {})) filledLangs.add(l);
 					} catch (err) {
-						errors.push(`${field || 'Eintrag'}: ${err?.response?.data?.error || err.message}`);
+						errors.push(`${field ? field + ' → ' : ''}${lang}: ${err?.response?.data?.error || err.message}`);
 					}
 					progress.value = { ...progress.value, done: progress.value.done + 1 };
 				}
