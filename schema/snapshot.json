@@ -9505,6 +9505,267 @@
         "foreign_key_table": null,
         "foreign_key_column": null
       }
+    },
+    {
+      "collection": "begruessung",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "begruessung",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "cds",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "cds",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "kuenstler",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "kuenstler",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "laender",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "laender",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "metadaten",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "metadaten",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "paedagogik",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "paedagogik",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "programme",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "programme",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "sonderseiten",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "sonderseiten",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
+    },
+    {
+      "collection": "texts",
+      "field": "llm_translate",
+      "type": "alias",
+      "meta": {
+        "collection": "texts",
+        "conditions": null,
+        "display": null,
+        "display_options": null,
+        "field": "llm_translate",
+        "group": null,
+        "hidden": false,
+        "interface": "llm-translate",
+        "note": "LLM-Übersetzung aus dem Deutschen",
+        "options": null,
+        "readonly": false,
+        "required": false,
+        "searchable": false,
+        "sort": "99",
+        "special": [
+          "alias",
+          "no-data"
+        ],
+        "translations": null,
+        "validation": null,
+        "validation_message": null,
+        "width": "full"
+      }
     }
   ],
   "systemFields": [
