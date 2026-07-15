@@ -159,14 +159,36 @@ async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFi
 	const filled = {};
 	if (!source) return { hasGerman: false, filled };
 
-	// One gateway call per field (each returns all target languages).
+	// Read the existing target rows up front so we can decide what needs writing
+	// BEFORE spending any (slow) gateway calls. Otherwise we'd translate every
+	// field and only discard the result at upsert time when content already
+	// exists and overwrite is off — burning an LLM call per already-filled field.
+	const existingByLang = {};
+	for (const lang of languages) {
+		const rows = await items.readByQuery({
+			filter: { _and: [{ [meta.parentFkField]: { _eq: pk } }, { [meta.langField]: { _eq: lang } }] },
+			limit: 1,
+		});
+		existingByLang[lang] = rows[0] || null;
+	}
+
+	// A (field, lang) pair needs translating only when the German source has
+	// content and the target is empty (or we're overwriting).
+	const needs = (field, lang) => {
+		if (isEmpty(source[field])) return false;
+		const existing = existingByLang[lang];
+		return overwrite || !(existing && !isEmpty(existing[field]));
+	};
+
+	// One gateway call per field, but only for the languages that still need it.
 	const perField = {}; // field -> { lang -> text }
 	for (const { field, format } of fields) {
-		if (isEmpty(source[field])) continue;
+		const wantLangs = languages.filter((lang) => needs(field, lang));
+		if (wantLangs.length === 0) continue; // already translated → no gateway call
 		try {
 			perField[field] = await callGateway(env, {
 				text: String(source[field]),
-				targetLanguages: languages,
+				targetLanguages: wantLangs,
 				format,
 			});
 		} catch (err) {
@@ -176,18 +198,13 @@ async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFi
 
 	// Upsert each target-language row.
 	for (const lang of languages) {
-		const existingRows = await items.readByQuery({
-			filter: { _and: [{ [meta.parentFkField]: { _eq: pk } }, { [meta.langField]: { _eq: lang } }] },
-			limit: 1,
-		});
-		const existing = existingRows[0];
+		const existing = existingByLang[lang];
 
 		const payload = {};
 		for (const { field } of fields) {
+			if (!needs(field, lang)) continue; // preserve human-edited / already-translated content
 			const translated = perField[field] && perField[field][lang];
 			if (isEmpty(translated)) continue;
-			const keep = existing && !isEmpty(existing[field]);
-			if (keep && !overwrite) continue; // preserve human-edited content
 			payload[field] = translated;
 		}
 		if (Object.keys(payload).length === 0) continue;
