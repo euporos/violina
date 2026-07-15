@@ -55,7 +55,8 @@
         qs       (:query-string req)
         url      (str upstream path (when (seq qs) (str "?" qs)))
         method   (str/upper-case (name (:request-method req)))
-        body-method? (not (#{"GET" "HEAD"} method))]
+        body-method? (not (#{"GET" "HEAD"} method))
+        start    (js/Date.now)]
     (-> (if body-method?
           (read-body (:body req))
           (js/Promise.resolve nil))
@@ -74,8 +75,16 @@
                            :headers (response-headers (.-headers resp))
                            :body    (js/Buffer.from buf)}))))
         (.catch (fn [e]
-                  (log/warnf "directus proxy %s %s failed: %s"
-                             method url (.-message e))
+                  ;; undici wraps everything as "fetch failed"; the useful part
+                  ;; (ECONNREFUSED vs UND_ERR_HEADERS_TIMEOUT vs …) is in .cause.
+                  ;; Elapsed distinguishes an instant refusal from a slow timeout.
+                  (let [cause   (.-cause e)
+                        detail  (or (some-> cause .-code)
+                                    (some-> cause .-message)
+                                    (.-message e))
+                        elapsed (- (js/Date.now) start)]
+                    (log/warnf "directus proxy %s %s failed after %dms: %s (%s)"
+                               method url elapsed (.-message e) detail))
                   {:status  502
                    :headers {"content-type" "text/plain"}
                    :body    "directus upstream unreachable"})))))
