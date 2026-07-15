@@ -46,6 +46,13 @@
 					<v-icon name="translate" left />
 					Übersetzen
 				</v-button>
+
+				<div v-if="running && progress" class="progress">
+					<v-progress-circular indeterminate small />
+					<span>
+						Übersetze Feld {{ Math.min(progress.done + 1, progress.total) }}/{{ progress.total }}<template v-if="progress.current"> — {{ progress.current }}</template>
+					</span>
+				</div>
 			</template>
 		</template>
 	</div>
@@ -72,8 +79,10 @@ export default defineComponent({
 		const error = ref(null);
 		const hasGerman = ref(false);
 		const targets = ref([]);
+		const fields = ref([]);
 		const selected = ref([]);
 		const overwrite = ref(false);
+		const progress = ref(null); // { done, total, current } while running
 
 		async function loadInfo() {
 			if (isNew.value) return;
@@ -85,6 +94,7 @@ export default defineComponent({
 				);
 				hasGerman.value = data.hasGerman;
 				targets.value = data.targets;
+				fields.value = data.fields || [];
 				// Pre-check languages whose translation row is entirely empty.
 				selected.value = data.targets.filter((t) => t.empty).map((t) => t.code);
 			} catch (err) {
@@ -97,32 +107,59 @@ export default defineComponent({
 		async function translate() {
 			running.value = true;
 			error.value = null;
+			// One request per field so no single request holds the reverse proxy
+			// open long enough to hit its read timeout (→ 502) on text-heavy items.
+			const list = fields.value.length ? fields.value : [null];
+			progress.value = { done: 0, total: list.length, current: null };
+			const filledLangs = new Set();
+			const errors = [];
 			try {
-				const { data } = await api.post(
-					`/llm-translate/${props.collection}/${encodeURIComponent(props.primaryKey)}`,
-					{ languages: selected.value, overwrite: overwrite.value },
-				);
-				const langs = Object.keys(data.filled || {});
-				notifications.add({
-					title: langs.length
-						? `Übersetzt: ${langs.join(', ')}`
-						: 'Keine Felder zu übersetzen',
-					type: 'success',
-				});
-				// Reload so the freshly written translation rows appear in the form.
-				setTimeout(() => window.location.reload(), 800);
-			} catch (err) {
-				error.value = err?.response?.data?.error || err.message || 'Übersetzung fehlgeschlagen';
-				notifications.add({ title: 'Übersetzung fehlgeschlagen', text: error.value, type: 'error' });
+				for (const field of list) {
+					progress.value = { ...progress.value, current: field };
+					try {
+						const { data } = await api.post(
+							`/llm-translate/${props.collection}/${encodeURIComponent(props.primaryKey)}`,
+							{
+								languages: selected.value,
+								overwrite: overwrite.value,
+								...(field ? { fields: [field] } : {}),
+							},
+						);
+						for (const l of Object.keys(data.filled || {})) filledLangs.add(l);
+					} catch (err) {
+						errors.push(`${field || 'Eintrag'}: ${err?.response?.data?.error || err.message}`);
+					}
+					progress.value = { ...progress.value, done: progress.value.done + 1 };
+				}
+
+				if (errors.length) {
+					error.value = errors.join('; ');
+					notifications.add({
+						title: 'Einige Felder fehlgeschlagen',
+						text: error.value,
+						type: 'error',
+					});
+					// Keep the form (no reload) so the error notice stays visible.
+				} else {
+					notifications.add({
+						title: filledLangs.size
+							? `Übersetzt: ${[...filledLangs].join(', ')}`
+							: 'Keine Felder zu übersetzen',
+						type: 'success',
+					});
+					// Reload so the freshly written translation rows appear in the form.
+					setTimeout(() => window.location.reload(), 800);
+				}
 			} finally {
 				running.value = false;
+				progress.value = null;
 			}
 		}
 
 		watch(() => props.primaryKey, loadInfo);
 		onMounted(loadInfo);
 
-		return { isNew, loadingInfo, running, error, hasGerman, targets, selected, overwrite, translate };
+		return { isNew, loadingInfo, running, error, hasGerman, targets, selected, overwrite, progress, translate };
 	},
 });
 </script>
@@ -147,5 +184,13 @@ export default defineComponent({
 }
 .overwrite {
 	margin-bottom: 16px;
+}
+.progress {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 12px;
+	color: var(--theme--foreground-subdued);
+	font-size: 0.9em;
 }
 </style>

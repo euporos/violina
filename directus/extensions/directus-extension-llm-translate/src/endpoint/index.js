@@ -131,15 +131,23 @@ async function callGateway(env, { text, targetLanguages, format }) {
 // --- shared core: translate one item ---------------------------------------
 
 // Translate a single parent item from German into `languages`.
+// `onlyFields` (optional array of field names) restricts the work to those
+// fields — the per-item interface uses it to translate one field per request so
+// each request stays short (a whole text-heavy item in one request outlives the
+// reverse-proxy read timeout → 502).
 // Returns { hasGerman, filled: { <lang>: [fields...] } }.
-async function translateItem({ collection, pk, languages, overwrite, ctx }) {
+async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFields }) {
 	const { schema, services, database, accountability, env, logger } = ctx;
 	const { ItemsService } = services;
 
 	const meta = resolveTranslationMeta(collection, schema);
 	if (!meta) throw new Error(`collection '${collection}' has no translations relation`);
 
-	const fields = await translatableFields(meta.transCollection, meta, ctx);
+	let fields = await translatableFields(meta.transCollection, meta, ctx);
+	if (onlyFields && onlyFields.length) {
+		const wanted = new Set(onlyFields);
+		fields = fields.filter((f) => wanted.has(f.field));
+	}
 	const items = new ItemsService(meta.transCollection, { schema, accountability, knex: database });
 
 	// German source row
@@ -333,10 +341,13 @@ export default (router, ctxBase) => {
 			const { collection, pk } = req.params;
 			const languages = Array.isArray(req.body && req.body.languages) ? req.body.languages : [];
 			const overwrite = !!(req.body && req.body.overwrite);
+			// Optional: restrict to specific fields (the interface sends one field
+			// per request to keep each request short). Omit → translate all fields.
+			const onlyFields = Array.isArray(req.body && req.body.fields) ? req.body.fields : undefined;
 			if (languages.length === 0) return res.status(400).json({ error: 'languages must be a non-empty array' });
 
 			const ctx = { schema, services, database, accountability: req.accountability, env, logger };
-			const result = await translateItem({ collection, pk, languages, overwrite, ctx });
+			const result = await translateItem({ collection, pk, languages, overwrite, ctx, onlyFields });
 			if (!result.hasGerman) return res.status(400).json({ error: 'no German source content to translate' });
 
 			res.json({ ok: true, ...result });
