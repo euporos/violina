@@ -49,9 +49,10 @@
 
 				<div v-if="running && progress" class="progress">
 					<v-progress-circular indeterminate small />
-					<span>
+					<span v-if="progress.total > 0">
 						Übersetze {{ Math.min(progress.done + 1, progress.total) }}/{{ progress.total }}<template v-if="progress.current"> — {{ progress.current }}</template>
 					</span>
+					<span v-else>Starte…</span>
 				</div>
 			</template>
 		</template>
@@ -107,55 +108,61 @@ export default defineComponent({
 		async function translate() {
 			running.value = true;
 			error.value = null;
-			// One request per field/language pair: the gateway translates languages
-			// sequentially, so a whole field × several languages in one request can
-			// still outlive the reverse-proxy read timeout (→ 502) on long fields.
-			// One pair keeps every request to a single gateway call.
-			const fieldList = fields.value.length ? fields.value : [null];
-			const pairs = [];
-			for (const field of fieldList) {
-				for (const lang of selected.value) pairs.push({ field, lang });
-			}
-			progress.value = { done: 0, total: pairs.length, current: null };
-			const filledLangs = new Set();
-			const errors = [];
+			progress.value = { done: 0, total: 0, current: null };
+			const base = `/llm-translate/${props.collection}/${encodeURIComponent(props.primaryKey)}`;
+			const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 			try {
-				for (const { field, lang } of pairs) {
-					progress.value = { ...progress.value, current: field ? `${field} → ${lang}` : lang };
-					try {
-						const { data } = await api.post(
-							`/llm-translate/${props.collection}/${encodeURIComponent(props.primaryKey)}`,
-							{
-								languages: [lang],
-								overwrite: overwrite.value,
-								...(field ? { fields: [field] } : {}),
-							},
-						);
-						for (const l of Object.keys(data.filled || {})) filledLangs.add(l);
-					} catch (err) {
-						errors.push(`${field ? field + ' → ' : ''}${lang}: ${err?.response?.data?.error || err.message}`);
-					}
-					progress.value = { ...progress.value, done: progress.value.done + 1 };
-				}
+				// Start the job; the server does the work and we poll for progress, so
+				// no request is held open and no proxy timeout can bite.
+				const { data: started } = await api.post(base, {
+					languages: selected.value,
+					overwrite: overwrite.value,
+				});
+				const jobId = started.jobId;
 
-				if (errors.length) {
-					error.value = errors.join('; ');
-					notifications.add({
-						title: 'Einige Felder fehlgeschlagen',
-						text: error.value,
-						type: 'error',
-					});
-					// Keep the form (no reload) so the error notice stays visible.
+				let job = null;
+				let misses = 0;
+				while (running.value) {
+					await sleep(1500);
+					try {
+						const { data } = await api.get(`${base}/job/${encodeURIComponent(jobId)}`);
+						job = data;
+						misses = 0;
+						progress.value = { done: job.done, total: job.total, current: job.current };
+						if (job.status !== 'running') break;
+					} catch (err) {
+						// A job that 404s vanished (server restarted) — completed fields are
+						// saved; re-running resumes via skip-already-translated. Tolerate a
+						// few transient poll blips before giving up.
+						if (err?.response?.status === 404) {
+							throw new Error('Job nicht mehr verfügbar (Server neu gestartet?) — bereits übersetzte Felder sind gespeichert, bitte erneut ausführen.');
+						}
+						if (++misses > 3) throw err;
+					}
+				}
+				if (!job) return;
+
+				if (!job.hasGerman) {
+					notifications.add({ title: 'Keine deutschen Inhalte zum Übersetzen', type: 'warning' });
+					return;
+				}
+				if (job.status === 'error') {
+					// Some fields may have succeeded; keep the notice visible (no reload)
+					// so the user sees what failed (e.g. a field over the length cap).
+					error.value = (job.errors || []).join('; ') || 'Übersetzung fehlgeschlagen';
+					notifications.add({ title: 'Übersetzung teils fehlgeschlagen', text: error.value, type: 'error' });
 				} else {
+					const langs = Object.keys(job.filled || {});
 					notifications.add({
-						title: filledLangs.size
-							? `Übersetzt: ${[...filledLangs].join(', ')}`
-							: 'Keine Felder zu übersetzen',
+						title: langs.length ? `Übersetzt: ${langs.join(', ')}` : 'Nichts zu übersetzen (alles aktuell)',
 						type: 'success',
 					});
 					// Reload so the freshly written translation rows appear in the form.
-					setTimeout(() => window.location.reload(), 800);
+					if (langs.length) setTimeout(() => window.location.reload(), 800);
 				}
+			} catch (err) {
+				error.value = err?.response?.data?.error || err.message || 'Übersetzung fehlgeschlagen';
+				notifications.add({ title: 'Übersetzung fehlgeschlagen', text: error.value, type: 'error' });
 			} finally {
 				running.value = false;
 				progress.value = null;

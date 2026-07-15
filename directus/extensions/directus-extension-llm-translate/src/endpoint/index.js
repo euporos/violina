@@ -18,6 +18,17 @@
 
 const SOURCE_LANG = 'de';
 
+// The gateway runs gemma3:12b on CPU at roughly ~30 characters/second. vps-3
+// caps a single gateway call at 10 min (nginx proxy_read_timeout + the gateway's
+// own Ollama HTTP timeout), so keep a unit's source well under that (~12k chars
+// ≈ ~6.5 min expected) for comfortable margin; a longer source field is skipped
+// with an error rather than risking that ceiling. Tune if the model/hardware changes.
+const MAX_CHARS_PER_UNIT = 12000;
+
+// Hard server-side ceiling for one translate job. On expiry the job (and its
+// in-flight gateway call) is aborted; already-written fields stay persisted.
+const JOB_MAX_MS = 15 * 60 * 1000;
+
 // Generic website context handed to the gateway so it picks the right register
 // and terminology. NOT translated — see gateway.clj context-block.
 const SITE_CONTEXT = {
@@ -104,9 +115,16 @@ async function translatableFields(transCollection, meta, ctx) {
 
 // --- gateway ---------------------------------------------------------------
 
-async function callGateway(env, { text, targetLanguages, format }) {
+const GATEWAY_POLL_MS = 2000;
+
+// Translate `text` via the gateway's async job API: POST /jobs starts the work
+// and returns immediately; we poll GET /jobs/:id (no key — the id is the
+// capability) until it finishes. Both requests are fast, so no held request
+// exists for any proxy (undici/nginx) to time out. Returns { lang: text }.
+async function callGateway(env, { text, targetLanguages, format, signal }) {
 	const base = String(env.LLM_GATEWAY_URL || '').replace(/\/+$/, '');
-	const resp = await fetch(base + '/translate', {
+
+	const startResp = await fetch(base + '/jobs', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -119,24 +137,41 @@ async function callGateway(env, { text, targetLanguages, format }) {
 			format,
 			context: SITE_CONTEXT,
 		}),
+		signal,
 	});
-	if (!resp.ok) {
-		const body = await resp.text().catch(() => '');
-		throw new Error(`gateway ${resp.status}: ${body.slice(0, 200)}`);
+	if (!startResp.ok) {
+		const body = await startResp.text().catch(() => '');
+		throw new Error(`gateway ${startResp.status}: ${body.slice(0, 200)}`);
 	}
-	const data = await resp.json();
-	return data.translations || {};
+	const { jobId } = await startResp.json();
+	if (!jobId) throw new Error('gateway did not return a jobId');
+
+	for (;;) {
+		if (signal && signal.aborted) throw new Error('aborted');
+		await new Promise((r) => setTimeout(r, GATEWAY_POLL_MS));
+		const pollResp = await fetch(`${base}/jobs/${encodeURIComponent(jobId)}`, { signal });
+		if (!pollResp.ok) {
+			const body = await pollResp.text().catch(() => '');
+			throw new Error(`gateway job ${pollResp.status}: ${body.slice(0, 200)}`);
+		}
+		const data = await pollResp.json();
+		if (data.status === 'done') return data.translations || {};
+		if (data.status === 'error') throw new Error(`gateway job failed: ${data.error || 'unknown'}`);
+		// status "running" → keep polling
+	}
 }
 
 // --- shared core: translate one item ---------------------------------------
 
-// Translate a single parent item from German into `languages`.
-// `onlyFields` (optional array of field names) restricts the work to those
-// fields — the per-item interface uses it to translate one field per request so
-// each request stays short (a whole text-heavy item in one request outlives the
-// reverse-proxy read timeout → 502).
+// Translate a single parent item from German into `languages`, one (field,
+// language) unit at a time — each unit is a single short gateway call, so no
+// individual call risks the Directus→gateway timeout. Reports progress through
+// optional callbacks so a background job can surface it live:
+//   onProgress({ total?, done?, current? })  — fields merged into the job state
+//   onError(message)                         — called once per failed unit
+// `onlyFields` (optional array of field names) restricts the work to those fields.
 // Returns { hasGerman, filled: { <lang>: [fields...] } }.
-async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFields }) {
+async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFields, onProgress, onError, signal }) {
 	const { schema, services, database, accountability, env, logger } = ctx;
 	const { ItemsService } = services;
 
@@ -157,7 +192,10 @@ async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFi
 	});
 	const source = sourceRows[0];
 	const filled = {};
-	if (!source) return { hasGerman: false, filled };
+	if (!source) {
+		if (onProgress) onProgress({ total: 0, done: 0, current: null });
+		return { hasGerman: false, filled };
+	}
 
 	// Read the existing target rows up front so we can decide what needs writing
 	// BEFORE spending any (slow) gateway calls. Otherwise we'd translate every
@@ -172,6 +210,8 @@ async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFi
 		existingByLang[lang] = rows[0] || null;
 	}
 
+	const pkField = schema.collections[meta.transCollection].primary;
+
 	// A (field, lang) pair needs translating only when the German source has
 	// content and the target is empty (or we're overwriting).
 	const needs = (field, lang) => {
@@ -180,50 +220,74 @@ async function translateItem({ collection, pk, languages, overwrite, ctx, onlyFi
 		return overwrite || !(existing && !isEmpty(existing[field]));
 	};
 
-	// One gateway call per field, but only for the languages that still need it.
-	const perField = {}; // field -> { lang -> text }
+	// Work list: one unit per (field, language) that still needs translating.
+	// Fields whose German source exceeds the per-unit char cap are skipped with
+	// an error — they'd risk stalling the job past its time ceiling.
+	const units = [];
 	for (const { field, format } of fields) {
 		const wantLangs = languages.filter((lang) => needs(field, lang));
-		if (wantLangs.length === 0) continue; // already translated → no gateway call
-		try {
-			perField[field] = await callGateway(env, {
-				text: String(source[field]),
-				targetLanguages: wantLangs,
-				format,
-			});
-		} catch (err) {
-			logger.warn(`llm-translate: ${collection}#${pk} field '${field}' failed: ${err.message}`);
+		if (wantLangs.length === 0) continue;
+		const len = String(source[field]).length;
+		if (len > MAX_CHARS_PER_UNIT) {
+			if (onError) {
+				onError(`${field}: Quelltext zu lang (${len} Zeichen, max. ${MAX_CHARS_PER_UNIT}) — bitte manuell übersetzen`);
+			}
+			continue;
 		}
+		for (const lang of wantLangs) units.push({ field, format, lang });
 	}
+	if (onProgress) onProgress({ total: units.length, done: 0, current: null });
 
-	// Upsert each target-language row.
-	for (const lang of languages) {
-		const existing = existingByLang[lang];
-
-		const payload = {};
-		for (const { field } of fields) {
-			if (!needs(field, lang)) continue; // preserve human-edited / already-translated content
-			const translated = perField[field] && perField[field][lang];
-			if (isEmpty(translated)) continue;
-			payload[field] = translated;
-		}
-		if (Object.keys(payload).length === 0) continue;
-
-		if (existing) {
-			await items.updateOne(existing[schema.collections[meta.transCollection].primary], payload);
-		} else {
-			await items.createOne({
-				[meta.parentFkField]: pk,
-				[meta.langField]: lang,
-				...(source.status !== undefined ? { status: source.status } : {}),
-				...payload,
+	let done = 0;
+	for (const { field, format, lang } of units) {
+		if (signal && signal.aborted) break; // job killed (time ceiling) → stop
+		if (onProgress) onProgress({ current: `${field} → ${lang}` });
+		try {
+			const translations = await callGateway(env, {
+				text: String(source[field]),
+				targetLanguages: [lang],
+				format,
+				signal,
 			});
+			const value = translations[lang];
+			if (!isEmpty(value)) {
+				const existing = existingByLang[lang];
+				if (existing) {
+					await items.updateOne(existing[pkField], { [field]: value });
+				} else {
+					// First field written for this language creates the row; cache the
+					// new pk so later fields UPDATE it instead of inserting duplicates.
+					const newPk = await items.createOne({
+						[meta.parentFkField]: pk,
+						[meta.langField]: lang,
+						...(source.status !== undefined ? { status: source.status } : {}),
+						[field]: value,
+					});
+					existingByLang[lang] = { [pkField]: newPk };
+				}
+				(filled[lang] = filled[lang] || []).push(field);
+			}
+		} catch (err) {
+			if (signal && signal.aborted) break; // aborted mid-call — reported by caller
+			const msg = `${field} → ${lang}: ${err.message}`;
+			logger.warn(`llm-translate: ${collection}#${pk} ${msg}`);
+			if (onError) onError(msg);
 		}
-		filled[lang] = Object.keys(payload);
+		done += 1;
+		if (onProgress) onProgress({ done });
 	}
 
 	return { hasGerman: true, filled };
 }
+
+// --- async translate jobs --------------------------------------------------
+// In-memory registry of running/finished jobs. This deployment runs a single
+// Directus instance; jobs are ephemeral (lost on restart), but translated
+// fields are persisted as they are written, so re-running resumes via the
+// skip-already-translated logic. See the POST route for the rationale.
+const jobs = new Map(); // jobId -> { status, total, done, current, errors, filled, hasGerman }
+let jobSeq = 0;
+const JOB_TTL_MS = 5 * 60 * 1000; // evict a finished job this long after it ends
 
 // --- endpoint --------------------------------------------------------------
 
@@ -351,6 +415,11 @@ export default (router, ctxBase) => {
 		}
 	});
 
+	// Start a translate job. The gateway is slow (a long field can take minutes
+	// per language on CPU), so we never hold the HTTP request open for the whole
+	// item — that dies at the reverse-proxy read timeout (undici in dev, nginx in
+	// prod) → 502. POST returns a jobId immediately; the interface polls
+	// GET .../job/:jobId. A server-side watchdog aborts the job at JOB_MAX_MS.
 	router.post('/:collection/:pk', async (req, res) => {
 		if (!requireConfig(res)) return;
 		try {
@@ -358,19 +427,67 @@ export default (router, ctxBase) => {
 			const { collection, pk } = req.params;
 			const languages = Array.isArray(req.body && req.body.languages) ? req.body.languages : [];
 			const overwrite = !!(req.body && req.body.overwrite);
-			// Optional: restrict to specific fields (the interface sends one field
-			// per request to keep each request short). Omit → translate all fields.
-			const onlyFields = Array.isArray(req.body && req.body.fields) ? req.body.fields : undefined;
 			if (languages.length === 0) return res.status(400).json({ error: 'languages must be a non-empty array' });
 
-			const ctx = { schema, services, database, accountability: req.accountability, env, logger };
-			const result = await translateItem({ collection, pk, languages, overwrite, ctx, onlyFields });
-			if (!result.hasGerman) return res.status(400).json({ error: 'no German source content to translate' });
+			const meta = resolveTranslationMeta(collection, schema);
+			if (!meta) return res.status(400).json({ error: 'not a translated collection' });
 
-			res.json({ ok: true, ...result });
+			const jobId = `${collection}:${pk}:${++jobSeq}`;
+			const job = { id: jobId, status: 'running', total: 0, done: 0, current: null, errors: [], filled: {}, hasGerman: true };
+			jobs.set(jobId, job);
+
+			// Kill switch: abort the job (and its in-flight gateway call) at the ceiling.
+			const controller = new AbortController();
+			const killer = setTimeout(() => controller.abort(), JOB_MAX_MS);
+			if (killer.unref) killer.unref();
+
+			// Fire and forget — the browser polls for progress. Capture the request's
+			// accountability so the background writes keep the same permissions.
+			const accountability = req.accountability;
+			(async () => {
+				try {
+					const ctx = { schema, services, database, accountability, env, logger };
+					const result = await translateItem({
+						collection,
+						pk,
+						languages,
+						overwrite,
+						ctx,
+						signal: controller.signal,
+						onProgress: (p) => Object.assign(job, p),
+						onError: (msg) => job.errors.push(msg),
+					});
+					job.hasGerman = result.hasGerman;
+					job.filled = result.filled;
+					if (controller.signal.aborted) {
+						job.errors.push(`Zeitlimit (${Math.round(JOB_MAX_MS / 60000)} min) überschritten — Job abgebrochen`);
+						job.status = 'error';
+					} else {
+						job.status = job.errors.length ? 'error' : 'done';
+					}
+				} catch (err) {
+					logger.error(err);
+					job.errors.push(err.message);
+					job.status = 'error';
+				} finally {
+					clearTimeout(killer);
+					const evict = setTimeout(() => jobs.delete(jobId), JOB_TTL_MS);
+					if (evict.unref) evict.unref();
+				}
+			})();
+
+			res.status(202).json({ jobId, status: 'running' });
 		} catch (err) {
 			logger.error(err);
 			res.status(500).json({ error: err.message });
 		}
+	});
+
+	// Poll a translate job's progress/result.
+	router.get('/:collection/:pk/job/:jobId', (req, res) => {
+		const job = jobs.get(req.params.jobId);
+		if (!job) return res.status(404).json({ error: 'unknown or expired job' });
+		const { id, status, total, done, current, errors, filled, hasGerman } = job;
+		res.json({ id, status, total, done, current, errors, filled, hasGerman });
 	});
 };
