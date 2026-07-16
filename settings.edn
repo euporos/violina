@@ -24,6 +24,13 @@
  :directus {:translations-key :translations
             :language-key :languages_code}
 
+ ;; LLM translation gateway (Ollama/Babashka on netcup-vps-3). Used by the
+ ;; site-wide translation tool in the /admin dashboard. :api-key is a secret
+ ;; supplied by the parent ../settings.edn (same value as netcup
+ ;; /etc/llm-gateway/env). NOT shared with the frontend.
+ :llm-gateway {:url     "https://llm.olivermotz.net"
+               :api-key #psite/secret "llm-gateway-api-key"}
+
  ;; IP geolocation: defaults UI locale (only as a tiebreak after
  ;; Accept-Language) and the CD shipping region. Disabled in dev — flip
  ;; :enabled? on in the parent ../settings.edn or environment for prod.
