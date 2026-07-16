@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "directus": "^11.17.4",
-    "mysql2": "^3.0.0"
+    "directus": "^11.17.4"
   }
 }

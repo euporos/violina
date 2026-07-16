@@ -105,17 +105,11 @@ in
     zip -r ../upload.zip ./*
   '';
 
-  # Run tests (expects MariaDB already running, e.g. via `nix run .#dev`)
+  # Run tests (expects Postgres already running, e.g. via `nix run .#dev`)
   test = mkApp "violina-test" ''
     export CHROME_BINARY_PATH=${pkgs.chromium}/bin/chromium
     npx shadow-cljs release server browser
     clj -M:test -m cognitect.test-runner
-  '';
-
-  # Initialize local dev database and directus user
-  init-db = mkApp "violina-init-db" ''
-    export MYSQL_UNIX_PORT="$PWD/.nix-shell/mysql/mysql.sock"
-    bash scripts/init_db.sh
   '';
 
   # Initialize local Postgres dev database and directus role.
@@ -125,30 +119,6 @@ in
   init-pg-db = flake-utils.lib.mkApp {
     drv = pkgs.writeShellScriptBin "violina-init-pg-db" ''
       exec nix develop .#default --command bash scripts/init_pg_db.sh
-    '';
-  };
-
-  # Rebuild local Postgres Directus DB from the MariaDB prod clone via pgloader.
-  # Wrapped in `nix develop` so PGHOST/PGPORT/... from pgEnvHook are in scope.
-  pg-migrate = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "violina-pg-migrate" ''
-      exec nix develop .#default --command bash scripts/pg_migrate.sh
-    '';
-  };
-
-  # One-time: walk the legacy v9 MariaDB dump (violina-petrychenko.de) through
-  # Directus v9 → v10 → v11 schema migrations, then pgloader-pump into local PG.
-  bootstrap-legacy = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "violina-bootstrap-legacy" ''
-      exec nix develop .#default --command bash scripts/bootstrap_legacy_db.sh "$@"
-    '';
-  };
-
-  # Repeatable: refresh content rows + uploads from prod into local PG.
-  # Assumes bootstrap-legacy has already populated the schema.
-  refresh-legacy = flake-utils.lib.mkApp {
-    drv = pkgs.writeShellScriptBin "violina-refresh-legacy" ''
-      exec nix develop .#default --command bash scripts/refresh_legacy_content.sh "$@"
     '';
   };
 
@@ -188,7 +158,7 @@ in
     };
   };
 
-  # Export Directus schema snapshot (requires running MariaDB + Directus)
+  # Export Directus schema snapshot (requires running Postgres + Directus)
   schema-export = flake-utils.lib.mkApp {
     drv = pkgs.writeShellApplication {
       name = "violina-schema-export";

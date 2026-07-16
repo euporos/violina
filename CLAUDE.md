@@ -26,7 +26,7 @@ All commands use Nix flake apps (the Makefile has been removed):
 # Initial setup
 nix run .#setup               # npm install + create directories
 
-# Development — launches all processes (MariaDB, shadow-cljs, statics watcher, app server, Directus) via process-compose
+# Development — launches all processes (Postgres, shadow-cljs, statics watcher, app server, Directus) via process-compose
 nix run .#dev
 
 # Building
@@ -41,7 +41,7 @@ nix run .#test                # clj -M:test -m cognitect.test-runner
 nix run .#process-reservoir   # process/resize images from reservoir/
 
 # Database
-nix run .#init-db             # initialize local dev database and Directus user
+nix run .#init-pg-db          # initialize local dev database and Directus role
 nix run .#pull-db-from-prod   # pull production database to local dev
 
 # Directus schema
@@ -58,7 +58,7 @@ nix run .#deploy-prod         # deploy to production (pulls main on server, runs
 - **Backend:** ClojureScript on Node.js via [Macchiato](https://macchiato-framework.github.io/) framework
 - **Frontend:** ClojureScript with [Re-frame](https://github.com/day8/re-frame) state management
 - **Routing:** [Reitit](https://github.com/metosin/reitit) with Malli coercion
-- **Database:** MySQL (MariaDB 10.6) via HoneySQL query builder
+- **Database:** PostgreSQL 17 via HoneySQL query builder
 - **CMS:** Directus 11.x (REST API for content/translations)
 - **Templating:** Hiccup/Hiccups (Clojure HTML DSL)
 - **Styling:** Garden (CSS-in-Clojure) + SCSS + Bulma 0.9.4
@@ -92,7 +92,7 @@ src/
 schema/
   snapshot.json     # Directus schema snapshot (exported via nix run .#schema-export)
 scripts/
-  init_db.sh        # Initialize local MariaDB + Directus admin user
+  init_pg_db.sh     # Initialize local Postgres + Directus role
   pull_db_from_prod.sh    # Pull prod DB to local dev
   redeploy.sh       # Production redeployment script
   upgrade_directus.sh     # Directus version upgrade helper
@@ -136,7 +136,7 @@ scripts/
 
 Dependencies in `../../libs/`:
 - `putils` - utility macros
-- `psite` - core framework (middleware, MySQL wrapper, async helpers)
+- `psite` - core framework (middleware, Postgres wrapper, async helpers)
 - `tdstuff` - additional utilities
 - `directus` - Directus integration
 - `bulma` - Bulma CSS components
@@ -147,8 +147,8 @@ Dependencies in `../../libs/`:
 
 - `flake.nix` — devShells (`default`, `prod`, `deploy`) and apps (imported from `apps.nix`)
 - `apps.nix` — all `nix run .#<name>` commands (replaces Makefile)
-- `process-compose.yaml` — dev process orchestration (MariaDB, shadow-cljs, watch-statics, app-server, Directus)
-- Node.js 22, MariaDB 10.6, JDK 17 provided via Nix
+- `process-compose.yaml` — dev process orchestration (Postgres, shadow-cljs, watch-statics, app-server, Directus)
+- Node.js 22, PostgreSQL 17, JDK 17 provided via Nix
 
 ### Configuration (deps.edn aliases)
 

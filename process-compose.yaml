@@ -3,32 +3,6 @@ version: "0.5"
 log_location: .nix-shell/process-compose.log
 
 processes:
-  mariadb:
-    command: |
-      if [ ! -d "$MYSQL_DATADIR" ]; then
-        echo "Initializing MariaDB data directory..."
-        mysql_install_db --auth-root-authentication-method=normal \
-          --datadir=$MYSQL_DATADIR --basedir=$MYSQL_BASEDIR \
-          --pid-file=$MYSQL_PID_FILE --port 3306
-      fi
-
-      exec mysqld --datadir=$MYSQL_DATADIR \
-        --pid-file=$MYSQL_PID_FILE \
-        --socket=$MYSQL_UNIX_PORT \
-        --port=3306
-    readiness_probe:
-      exec:
-        command: "mysqladmin -u root --socket=$MYSQL_UNIX_PORT ping"
-      initial_delay_seconds: 3
-      period_seconds: 2
-      timeout_seconds: 5
-      failure_threshold: 10
-    shutdown:
-      command: "mysqladmin -u root --socket=$MYSQL_UNIX_PORT shutdown"
-      timeout_seconds: 15
-    availability:
-      restart: "no"
-
   postgres:
     command: |
       mkdir -p "$PGHOME"
@@ -59,9 +33,6 @@ processes:
     command: |
       rm -f server/server.js
       exec npx shadow-cljs watch browser server
-    depends_on:
-      mariadb:
-        condition: process_healthy
     readiness_probe:
       exec:
         command: "test -f server/server.js"
@@ -102,8 +73,6 @@ processes:
   app-server:
     command: "node server/server.js"
     depends_on:
-      mariadb:
-        condition: process_healthy
       postgres:
         condition: process_healthy
       shadow-cljs:
@@ -117,8 +86,6 @@ processes:
   directus:
     command: "cd directus && npx directus start"
     depends_on:
-      mariadb:
-        condition: process_healthy
       postgres:
         condition: process_healthy
     availability:

@@ -13,7 +13,6 @@
 
         # Shared dependencies (replaces common.nix)
         commonPackages = with pkgs; [
-          mariadb_106
           postgresql_17
           pgloader
           imagemagick
@@ -46,16 +45,6 @@
           unset __repo_root __repo_name __relative_path
         '';
 
-        # MySQL environment variables (no init, no daemon — process-compose handles that)
-        mysqlEnvHook = ''
-          export MYSQL_BASEDIR=${pkgs.mariadb_106}
-          export MYSQL_HOME=$PWD/.nix-shell/mysql
-          export MYSQL_DATADIR=$MYSQL_HOME/data
-          export MYSQL_UNIX_PORT=$MYSQL_HOME/mysql.sock
-          export MYSQL_PID_FILE=$MYSQL_HOME/mysql.pid
-          alias mysql='mysql -u root'
-        '';
-
         # PostgreSQL environment variables. PGPORT is the single source of truth
         # for the port — everything downstream (process-compose, psql, init script)
         # reads it from here.
@@ -70,13 +59,13 @@
 
       in {
         devShells = {
-          # Default dev shell — all tools + process-compose, DB env for MySQL + PG
+          # Default dev shell — all tools + process-compose, DB env for PG
           default = pkgs.mkShell ({
             nativeBuildInputs = commonPackages ++ [ pkgs.process-compose ];
-            shellHook = promptHook + mysqlEnvHook + pgEnvHook;
+            shellHook = promptHook + pgEnvHook;
           } // commonEnv);
 
-          # Production shell — NODE_ENV=production, no MySQL
+          # Production shell — NODE_ENV=production
           prod = pkgs.mkShell ({
             nativeBuildInputs = commonPackages;
             NODE_ENV = "production";
