@@ -30,6 +30,17 @@
           SASS_DIRECTORY = pkgs.sass;
           SCSS_EXECUTABLE = "${pkgs.sass}/bin/scss";
           CHROME_BINARY_PATH = "${pkgs.chromium}/bin/chromium";
+
+          # LLM translation site context — single source of truth for BOTH the
+          # Directus extension (reads env.LLM_SITE_*) and the site-wide /admin
+          # tool (psite-config merges these into settings as :llm-site-*). Set
+          # here once so dev (nix run .#dev) and prod (systemd nix develop #prod)
+          # agree without duplicating the context into .env or settings.edn.
+          LLM_SITE_NAME = "Violina Petrychenko";
+          LLM_SITE_DESCRIPTION = "Website of the classical concert pianist Violina Petrychenko — concert programmes, CDs, press reviews and piano pedagogy.";
+          LLM_SITE_DOMAIN = "violina-petrychenko.de";
+          LLM_SITE_AUDIENCE = "concert organisers, classical-music audiences and press";
+          LLM_SITE_TONE = "formal and professional, third person";
         };
 
         # Tomato-colored prompt (RGB 255,99,71) showing repo_name:relative/path
