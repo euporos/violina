@@ -202,8 +202,9 @@
 ;; ---------------------------------------------------------------------------
 
 ;; Skip fields whose German source is too long for the gateway's per-call time
-;; budget (kept in sync with the extension's MAX_CHARS_PER_UNIT).
-(def ^:private max-chars 12000)
+;; budget (kept in sync with the extension's MAX_CHARS_PER_UNIT and the gateway's
+;; 30-min Ollama/nginx ceiling — ~30k chars ≈ ~17 min expected, ~21 min worst).
+(def ^:private max-chars 30000)
 
 ;; jobId -> the upsert context needed to write the result when the job finishes.
 ;; In-memory (single app-server instance); lost on restart, in which case the

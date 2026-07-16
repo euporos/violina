@@ -19,15 +19,18 @@
 const SOURCE_LANG = 'de';
 
 // The gateway runs gemma3:12b on CPU at roughly ~30 characters/second. vps-3
-// caps a single gateway call at 10 min (nginx proxy_read_timeout + the gateway's
-// own Ollama HTTP timeout), so keep a unit's source well under that (~12k chars
-// ≈ ~6.5 min expected) for comfortable margin; a longer source field is skipped
-// with an error rather than risking that ceiling. Tune if the model/hardware changes.
-const MAX_CHARS_PER_UNIT = 12000;
+// caps a single gateway call at 30 min (nginx proxy_read_timeout + the gateway's
+// own Ollama HTTP timeout), so keep a unit's source well under that (~30k chars
+// ≈ ~17 min expected, ~21 min worst-observed) for comfortable margin; a longer
+// source field is skipped with an error rather than risking that ceiling. Tune
+// if the model/hardware changes.
+const MAX_CHARS_PER_UNIT = 30000;
 
-// Hard server-side ceiling for one translate job. On expiry the job (and its
-// in-flight gateway call) is aborted; already-written fields stay persisted.
-const JOB_MAX_MS = 15 * 60 * 1000;
+// Hard server-side ceiling for one translate job (a whole item = several
+// field×language units run sequentially). ~1.5× the single-call ceiling so a
+// multi-unit item still fits. On expiry the job (and its in-flight gateway call)
+// is aborted; already-written fields stay persisted.
+const JOB_MAX_MS = 45 * 60 * 1000;
 
 // Generic website context handed to the gateway so it picks the right register
 // and terminology. NOT translated — see gateway.clj context-block.
