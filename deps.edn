@@ -20,7 +20,7 @@
         psite/psite-seo        {:git/url "git@github.com:euporos/psite.git" :git/sha "4faa1f5eea71a766cbf925db36139a84bba2236f" :deps/root "psite-seo"}
         psite/psite-hiccup     {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-hiccup"}
         psite/psite-tooling    {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-tooling"}
-        psite/psite-translate  {:git/url "git@github.com:euporos/psite.git" :git/sha "4b287c1be4fdff9c95e58e09c36aeee8ad6388ab" :deps/root "psite-translate"}
+        psite/psite-translate  {:git/url "git@github.com:euporos/psite.git" :git/sha "c44d226b21844472b816337662dcc73dd25e4e83" :deps/root "psite-translate"}
         psite/psite-utils      {:git/url "git@github.com:euporos/psite.git" :git/sha "65f57a654e7ca1f2906281d4d0566c54acef42e8" :deps/root "psite-utils"}
         metosin/reitit {:mvn/version "0.5.17"}
         com.taoensso/timbre {:mvn/version "5.2.1"}

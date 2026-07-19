@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "directus": "^11.17.4",
-    "directus-extension-llm-translate": "git+ssh://git@github.com/euporos/directus-extension-llm-translate.git#8bc3e7270453779c6177328871d35fb269e53eb4"
+    "directus-extension-llm-translate": "git+ssh://git@github.com/euporos/directus-extension-llm-translate.git#7c9495cadbfa73fc38d6ae6140822660d600a5d1"
   }
 }
